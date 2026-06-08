@@ -459,7 +459,7 @@ Python Developer | Django Developer | AI/ML Enthusiast
 
 GitHub: https://github.com/Shaurya-thinker
 
-LinkedIn: https://www.linkedin.com/in/shaurya-vrat-shukla/
+LinkedIn: https://www.linkedin.com/in/shaurya-vrat-shukla
 
 
 ---
