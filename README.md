@@ -1,202 +1,211 @@
-# Django CRM System
+# 🚀 Django CRM System
 
-A role-based Customer Relationship Management (CRM) system built with Django and PostgreSQL. This project was developed as part of a Django learning internship to explore real-world web development concepts such as authentication, authorization, CRUD operations, file uploads, search, filtering, role management, and PostgreSQL integration.
+A full-stack Customer Relationship Management (CRM) system built with Django, PostgreSQL, Bootstrap, and CKEditor.
 
----
-
-## Features
-
-### Authentication & Authorization
-
-* User Login and Logout
-* Protected Routes using Django Authentication
-* Role-Based Access Control using Django Groups
-
-### Roles
-
-#### Admin
-
-* Full access to the system
-* Manage companies, employees, and tasks
-
-#### Manager
-
-* Manage companies and tasks
-* View organizational data
-
-#### Employee
-
-* View only assigned tasks
-* Personalized dashboard experience
+<p align="center">
+  <img src="assets/dashboard.png" width="900">
+</p>
 
 ---
 
-## Dashboard
+## 🌐 Live Demo
 
-* Total Companies Count
-* Total Employees Count
-* Total Tasks Count
-* Recent Tasks Overview
-* Role-aware task visibility
+🔗 https://django-crm-system-yegs.onrender.com
 
 ---
 
-## Company Management
+## ✨ Features
 
-* Create Company
-* View Company Details
-* Update Company Information
-* Delete Company
-* Company Logo Upload
-* Search Companies
-* Pagination
-* SEO-friendly Slug URLs
+### 👥 Role Based Access Control
 
----
-
-## Employee Management
-
-* Create Employee
-* View Employee Details
-* Update Employee Information
-* Delete Employee
-* Employee Profile Image Upload
-* Search Employees
-* Pagination
+| Role | Permissions |
+|--------|------------|
+| Admin | Full system access |
+| Manager | Manage companies, employees, and tasks |
+| Employee | View assigned tasks and update status |
 
 ---
 
-## Task Management
+### 🏢 Company Management
 
-* Create Tasks
-* Assign Tasks to Employees
-* Update Tasks
-* Delete Tasks
-* Task Status Tracking
-* Task Priority Management
-* Task Attachments
-* Deadline Management
-* Task Detail View
-
-### Task Status
-
-* Pending
-* In Progress
-* Completed
-
-### Task Priority
-
-* Low
-* Medium
-* High
+- Create Companies
+- Update Company Information
+- Company Logo Upload
+- Search Companies
+- Pagination Support
 
 ---
 
-## Search & Filtering
+### 👨‍💼 Employee Management
 
-### Company Search
-
-Search companies by name.
-
-### Employee Search
-
-Search employees by username.
-
-### Task Search
-
-Search tasks by title.
-
-### Task Filters
-
-* Filter by Status
-* Filter by Priority
+- Create Employees
+- Assign Employees to Companies
+- Upload Profile Images
+- Employee Detail Pages
+- CRUD Operations
 
 ---
 
-## Rich Text Editing
+### 📋 Task Management
 
-Integrated CKEditor for task descriptions to support:
-
-* Rich Text Formatting
-* Lists
-* Headings
-* Links
-* Enhanced Content Editing
-
----
-
-## Error Handling
-
-* Custom 403 Forbidden Page
-* Custom 404 Not Found Page
-* Form Validation
-* Permission-Based Access Control
+- Create Tasks
+- Assign Tasks to Employees
+- Task Priorities
+- Task Status Tracking
+- Task Attachments
+- Rich Text Descriptions using CKEditor
 
 ---
 
-## Database Design
+### 📊 Dashboard
 
-### Company
-
-* Name
-* Email
-* Phone
-* Address
-* Logo
-
-### Employee
-
-* User
-* Company
-* Designation
-* Profile Image
-
-### Task
-
-* Title
-* Description
-* Employee
-* Status
-* Priority
-* Deadline
-* Attachment
-* Created At
+- Total Companies
+- Total Employees
+- Total Tasks
+- Recent Tasks Overview
+- Role-Based Dashboard Content
 
 ---
 
-## Technologies Used
+### 🔐 Authentication & Authorization
+
+- Login System
+- Logout System
+- Protected Routes
+- Custom Permission Decorators
+- Group-Based Access Control
+
+---
+
+### ⚠️ Error Handling
+
+- Custom 403 Page
+- Custom 404 Page
+- Form Validation
+- Permission Checks
+
+---
+
+## 🛠️ Tech Stack
 
 ### Backend
 
-* Django 6
-* Python 3
-
-### Database
-
-* PostgreSQL
+- Django 6
+- PostgreSQL
+- Django ORM
 
 ### Frontend
 
-* HTML
-* Bootstrap 5
-* Django Templates
+- HTML5
+- CSS3
+- Bootstrap 5
 
 ### Additional Packages
 
-* django-ckeditor
-* pillow
-* psycopg2-binary
-* python-dotenv
+- CKEditor
+- Pillow
+- WhiteNoise
+- Gunicorn
+- python-dotenv
+
+### Deployment
+
+- Render
+- PostgreSQL Database
+- GitHub Integration
 
 ---
 
-## Setup Instructions
+## 🗄️ Database Design
+
+```text
+Company
+   │
+   └── Employee
+            │
+            └── Task
+```
+
+### Models
+
+#### Company
+
+- Name
+- Email
+- Phone
+- Address
+- Logo
+
+#### Employee
+
+- User
+- Company
+- Designation
+- Phone
+- Profile Image
+
+#### Task
+
+- Title
+- Description
+- Employee
+- Status
+- Priority
+- Deadline
+- Attachment
+
+---
+
+## 📸 Screenshots
+
+### Dashboard
+
+![Dashboard](assets/dashboard.png)
+
+### Companies
+
+![Companies](assets/company.png)
+
+### Employees
+
+![Employees](assets/employee.png)
+
+### Tasks
+
+![Tasks](assets/task.png)
+
+### CKEditor Integration
+
+![CKEditor](assets/ckeditor.png)
+
+---
+
+## 🔄 System Workflow
+
+```text
+Admin
+   │
+   ├── Creates Companies
+   │
+   ├── Creates Employees
+   │
+   └── Assigns Tasks
+            │
+            ▼
+        Employee
+            │
+            ▼
+     Updates Task Status
+```
+
+---
+
+## 🚀 Installation
 
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
-cd django-crm-system
+git clone https://github.com/YOUR_USERNAME/django-crm-system.git
 ```
 
 ### Create Virtual Environment
@@ -205,15 +214,13 @@ cd django-crm-system
 python -m venv env
 ```
 
-### Activate Virtual Environment
-
-Windows:
+### Activate Environment
 
 ```bash
 env\Scripts\activate
 ```
 
-### Install Dependencies
+### Install Requirements
 
 ```bash
 pip install -r requirements.txt
@@ -221,7 +228,7 @@ pip install -r requirements.txt
 
 ### Configure Environment Variables
 
-Create a `.env` file:
+Create `.env`
 
 ```env
 SECRET_KEY=your_secret_key
@@ -235,19 +242,13 @@ DB_HOST=localhost
 DB_PORT=5432
 ```
 
-### Run Migrations
+### Apply Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### Create Superuser
-
-```bash
-python manage.py createsuperuser
-```
-
-### Run Development Server
+### Run Server
 
 ```bash
 python manage.py runserver
@@ -255,43 +256,46 @@ python manage.py runserver
 
 ---
 
-## Learning Outcomes
+## 📦 Deployment
 
-This project helped explore:
+The project is deployed using:
 
-* Django Models
-* Django ORM
-* CRUD Operations
-* Authentication
-* Authorization
-* Django Groups and Permissions
-* Model Forms
-* File Uploads
-* Pagination
-* Search and Filtering
-* PostgreSQL Integration
-* Environment Variables
-* Third-Party Package Integration
-* Template Inheritance
-* Custom Template Tags
-* Role-Based Access Control
+- Render Web Service
+- PostgreSQL Database
+- WhiteNoise Static Files
+- GitHub Auto Deploy
+
+Every push to the main branch automatically triggers a redeployment.
 
 ---
 
-## Future Enhancements
+## 🎯 Learning Outcomes
 
-* Deployment on Cloud Platform
-* Automated CI/CD Pipeline
-* Docker Containerization
-* REST API using Django REST Framework
-* Email Notifications
-* Activity Logs
-* Advanced Reporting Dashboard
+This project demonstrates:
+
+- Django Authentication
+- Django Authorization
+- Custom Decorators
+- CRUD Operations
+- PostgreSQL Integration
+- File Upload Handling
+- CKEditor Integration
+- Environment Variables
+- Production Deployment
+- Git & GitHub Workflow
+- Render Deployment
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Shaurya Vrat Shukla**
 
-Built as part of a Django Internship Learning Project to gain hands-on experience with full-stack web application development using Django and PostgreSQL.
+Python Developer | Django Developer | AI/ML Enthusiast
+
+GitHub: https://github.com/Shaurya-thinker
+
+LinkedIn: https://www.linkedin.com/in/shaurya-vrat-shukla/
+
+---
+⭐ If you found this project useful, consider giving it a star.
