@@ -295,7 +295,7 @@ crm_project/
 ## Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/django-crm-system.git
+git clone https://github.com/Shaurya-thinker/django-crm-system.git
 cd django-crm-system
 ```
 
