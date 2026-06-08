@@ -36,7 +36,7 @@
 
 ### Production URL
 
-https://django-crm-system-yegs.onrender.com
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://django-crm-system-yegs.onrender.com)
 
 ---
 
