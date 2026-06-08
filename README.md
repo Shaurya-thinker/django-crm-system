@@ -1,186 +1,168 @@
-# 🚀 Django CRM System
-
-A full-stack Customer Relationship Management (CRM) system built with Django, PostgreSQL, Bootstrap, and CKEditor.
+# <p align="center">🚀 Django CRM System</p>
 
 <p align="center">
-  <img src="assets/dashboard.png" width="900">
+  <img src="assets/banner.png" width="100%">
+</p>
+
+<p align="center">
+  <b>Role-Based Customer Relationship Management Platform built with Django & PostgreSQL</b>
+</p>
+
+<p align="center">
+
+![Django](https://img.shields.io/badge/Django-6.0-green?style=for-the-badge\&logo=django)
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=for-the-badge\&logo=python)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue?style=for-the-badge\&logo=postgresql)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?style=for-the-badge\&logo=bootstrap)
+![Render](https://img.shields.io/badge/Hosted%20On-Render-black?style=for-the-badge\&logo=render)
+
+</p>
+
+<p align="center">
+
+![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/django-crm-system?style=social)
+![Forks](https://img.shields.io/github/forks/YOUR_USERNAME/django-crm-system?style=social)
+![Issues](https://img.shields.io/github/issues/YOUR_USERNAME/django-crm-system)
+
 </p>
 
 ---
 
-## 🌐 Live Demo
+<p align="center">
 
-🔗 https://django-crm-system-yegs.onrender.com
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=3000&pause=1000&center=true&width=900&lines=Customer+Relationship+Management+System;Role-Based+Access+Control;PostgreSQL+Powered;Production+Ready+Django+Application;Deployed+on+Render+with+CI%2FCD">
+
+</p>
 
 ---
 
-## ✨ Features
+# 🌐 Live Demo
 
-### 👥 Role Based Access Control
+### Production URL
 
-| Role | Permissions |
-|--------|------------|
-| Admin | Full system access |
-| Manager | Manage companies, employees, and tasks |
-| Employee | View assigned tasks and update status |
+https://django-crm-system-yegs.onrender.com
+
+---
+
+# 📖 Project Overview
+
+Django CRM System is a full-stack Customer Relationship Management platform designed to manage companies, employees, and tasks through a secure role-based workflow.
+
+The application demonstrates real-world Django development concepts including:
+
+* Authentication & Authorization
+* Role-Based Access Control
+* PostgreSQL Integration
+* File Upload Handling
+* CKEditor Integration
+* Search & Filtering
+* Production Deployment
+* Environment Variables
+* CI/CD Workflow
+
+---
+
+# ✨ Core Features
+
+### 🛡 Role-Based Access Control
+
+* Admin → Full Access
+* Manager → Manage Companies & Tasks
+* Employee → View Assigned Tasks
 
 ---
 
 ### 🏢 Company Management
 
-- Create Companies
-- Update Company Information
-- Company Logo Upload
-- Search Companies
-- Pagination Support
+* Create Companies
+* Update Company Details
+* Company Logo Upload
+* Company Search
+* Pagination Support
+* Slug-Based URLs
 
 ---
 
 ### 👨‍💼 Employee Management
 
-- Create Employees
-- Assign Employees to Companies
-- Upload Profile Images
-- Employee Detail Pages
-- CRUD Operations
+* Create Employees
+* Employee Profiles
+* Company Assignment
+* Profile Image Upload
+* CRUD Operations
 
 ---
 
 ### 📋 Task Management
 
-- Create Tasks
-- Assign Tasks to Employees
-- Task Priorities
-- Task Status Tracking
-- Task Attachments
-- Rich Text Descriptions using CKEditor
+* Create Tasks
+* Assign Tasks to Employees
+* Status Tracking
+* Priority Levels
+* File Attachments
+* Deadlines
+* Rich Text Descriptions
 
 ---
 
 ### 📊 Dashboard
 
-- Total Companies
-- Total Employees
-- Total Tasks
-- Recent Tasks Overview
-- Role-Based Dashboard Content
-
----
-
-### 🔐 Authentication & Authorization
-
-- Login System
-- Logout System
-- Protected Routes
-- Custom Permission Decorators
-- Group-Based Access Control
+* Total Companies
+* Total Employees
+* Total Tasks
+* Recent Tasks
+* Personalized Employee Dashboard
 
 ---
 
 ### ⚠️ Error Handling
 
-- Custom 403 Page
-- Custom 404 Page
-- Form Validation
-- Permission Checks
+* Custom 403 Page
+* Custom 404 Page
+* Form Validation
+* Permission Protection
 
 ---
 
-## 🛠️ Tech Stack
+# 📈 Project Statistics
 
-### Backend
-
-- Django 6
-- PostgreSQL
-- Django ORM
-
-### Frontend
-
-- HTML5
-- CSS3
-- Bootstrap 5
-
-### Additional Packages
-
-- CKEditor
-- Pillow
-- WhiteNoise
-- Gunicorn
-- python-dotenv
-
-### Deployment
-
-- Render
-- PostgreSQL Database
-- GitHub Integration
+| Metric           | Value        |
+| ---------------- | ------------ |
+| Models           | 3            |
+| CRUD Modules     | 3            |
+| User Roles       | 3            |
+| Database         | PostgreSQL   |
+| Authentication   | Django Auth  |
+| Rich Text Editor | CKEditor     |
+| Deployment       | Render       |
+| Version Control  | Git + GitHub |
 
 ---
 
-## 🗄️ Database Design
+# 🏗 System Architecture
 
 ```text
-Company
+Browser
    │
-   └── Employee
-            │
-            └── Task
+   ▼
+Render
+   │
+   ▼
+Gunicorn
+   │
+   ▼
+Django Application
+   │
+   ▼
+Django ORM
+   │
+   ▼
+PostgreSQL Database
 ```
 
-### Models
-
-#### Company
-
-- Name
-- Email
-- Phone
-- Address
-- Logo
-
-#### Employee
-
-- User
-- Company
-- Designation
-- Phone
-- Profile Image
-
-#### Task
-
-- Title
-- Description
-- Employee
-- Status
-- Priority
-- Deadline
-- Attachment
-
 ---
 
-## 📸 Screenshots
-
-### Dashboard
-
-![Dashboard](assets/dashboard.png)
-
-### Companies
-
-![Companies](assets/company.png)
-
-### Employees
-
-![Employees](assets/employee.png)
-
-### Tasks
-
-![Tasks](assets/task.png)
-
-### CKEditor Integration
-
-![CKEditor](assets/ckeditor.png)
-
----
-
-## 🔄 System Workflow
+# 🔄 Application Workflow
 
 ```text
 Admin
@@ -200,35 +182,150 @@ Admin
 
 ---
 
-## 🚀 Installation
+# 🗄 Database Design
 
-### Clone Repository
+```text
+Company
+   │
+   │ 1:N
+   ▼
+Employee
+   │
+   │ 1:N
+   ▼
+Task
+```
+
+---
+
+# 📸 Application Preview
+
+## Dashboard
+
+![Dashboard](assets/dashboard.png)
+
+---
+
+## Companies Module
+
+![Companies](assets/company.png)
+
+---
+
+## Employees Module
+
+![Employees](assets/employee.png)
+
+---
+
+## Tasks Module
+
+![Tasks](assets/task.png)
+
+---
+
+## CKEditor Integration
+
+![CKEditor](assets/ckeditor.png)
+
+---
+
+# 🛠 Technology Stack
+
+## Backend
+
+* Python 3
+* Django 6
+
+## Database
+
+* PostgreSQL
+
+## Frontend
+
+* HTML5
+* CSS3
+* Bootstrap 5
+* Django Templates
+
+## Packages
+
+* django-ckeditor
+* psycopg2-binary
+* Pillow
+* WhiteNoise
+* python-dotenv
+* Gunicorn
+
+## Deployment
+
+* Render
+* GitHub
+* PostgreSQL
+
+---
+
+# 📂 Project Structure
+
+```text
+crm_project/
+│
+├── crm/
+│   ├── migrations/
+│   ├── templates/
+│   ├── templatetags/
+│   ├── forms.py
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+│
+├── crm_project/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── media/
+├── staticfiles/
+├── requirements.txt
+├── Procfile
+├── manage.py
+└── README.md
+```
+
+---
+
+# 🚀 Installation Guide
+
+## Clone Repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/django-crm-system.git
+cd django-crm-system
 ```
 
-### Create Virtual Environment
+## Create Virtual Environment
 
 ```bash
 python -m venv env
 ```
 
-### Activate Environment
+## Activate Environment
+
+### Windows
 
 ```bash
 env\Scripts\activate
 ```
 
-### Install Requirements
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configure Environment Variables
+## Configure Environment Variables
 
-Create `.env`
+Create a `.env` file:
 
 ```env
 SECRET_KEY=your_secret_key
@@ -242,13 +339,19 @@ DB_HOST=localhost
 DB_PORT=5432
 ```
 
-### Apply Migrations
+## Apply Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### Run Server
+## Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+## Run Development Server
 
 ```bash
 python manage.py runserver
@@ -256,34 +359,99 @@ python manage.py runserver
 
 ---
 
-## 📦 Deployment
+# 🌍 Deployment
 
-The project is deployed using:
+The application is deployed using:
 
-- Render Web Service
-- PostgreSQL Database
-- WhiteNoise Static Files
-- GitHub Auto Deploy
+* Render Web Service
+* PostgreSQL Database
+* WhiteNoise Static Files
+* Gunicorn WSGI Server
+* GitHub Auto Deploy
 
-Every push to the main branch automatically triggers a redeployment.
+### CI/CD Flow
+
+```text
+Code Changes
+      │
+      ▼
+Git Push
+      │
+      ▼
+GitHub Repository
+      │
+      ▼
+Render Auto Deploy
+      │
+      ▼
+Production Website
+```
 
 ---
 
-## 🎯 Learning Outcomes
+# 🎯 Key Concepts Demonstrated
 
-This project demonstrates:
+### Django
 
-- Django Authentication
-- Django Authorization
-- Custom Decorators
-- CRUD Operations
-- PostgreSQL Integration
-- File Upload Handling
-- CKEditor Integration
-- Environment Variables
-- Production Deployment
-- Git & GitHub Workflow
-- Render Deployment
+* Models
+* Views
+* Templates
+* Forms
+* Authentication
+* Authorization
+* Custom Decorators
+
+### Database
+
+* PostgreSQL
+* ORM Relationships
+* Migrations
+
+### Production
+
+* Environment Variables
+* Static Files
+* WhiteNoise
+* Gunicorn
+* Render Deployment
+
+### Software Engineering
+
+* Git
+* GitHub
+* CI/CD
+* Documentation
+* Project Structuring
+
+---
+
+# 🚀 Future Enhancements
+
+* Cloudinary Integration
+* REST API using DRF
+* Email Notifications
+* Activity Logs
+* Docker Support
+* AWS Deployment
+* Analytics Dashboard
+* Team Collaboration Features
+
+---
+
+# 📚 Learning Outcomes
+
+This project helped me gain hands-on experience with:
+
+* Django Authentication
+* Role-Based Authorization
+* PostgreSQL Integration
+* CKEditor Integration
+* CRUD Operations
+* File Upload Handling
+* Production Deployment
+* GitHub Workflow
+* Environment Variables
+* CI/CD Concepts
 
 ---
 
@@ -297,5 +465,12 @@ GitHub: https://github.com/Shaurya-thinker
 
 LinkedIn: https://www.linkedin.com/in/shaurya-vrat-shukla/
 
+
 ---
-⭐ If you found this project useful, consider giving it a star.
+
+<p align="center">
+⭐ If you found this project interesting, consider giving it a star.
+</p>
+
+
+
