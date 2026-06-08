@@ -1,10 +1,6 @@
 # <p align="center">🚀 Django CRM System</p>
 
 <p align="center">
-  <img src="assets/banner.png" width="100%">
-</p>
-
-<p align="center">
   <b>Role-Based Customer Relationship Management Platform built with Django & PostgreSQL</b>
 </p>
 
