@@ -16,9 +16,9 @@
 
 <p align="center">
 
-![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/django-crm-system?style=social)
-![Forks](https://img.shields.io/github/forks/YOUR_USERNAME/django-crm-system?style=social)
-![Issues](https://img.shields.io/github/issues/YOUR_USERNAME/django-crm-system)
+![Stars](https://img.shields.io/github/stars/Shaurya-thinker/django-crm-system?style=social)
+![Forks](https://img.shields.io/github/forks/Shaurya-thinker/django-crm-system?style=social)
+![Issues](https://img.shields.io/github/issues/Shaurya-thinker/django-crm-system)
 
 </p>
 
