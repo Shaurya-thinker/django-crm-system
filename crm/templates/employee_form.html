@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    {{ heading }}
+</h1>
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+            {% for field in form %}
+
+            <div class="mb-3">
+
+                {{ field.label_tag }}
+
+                {{ field }}
+
+                {% if field.errors %}
+
+                    <div class="text-danger">
+
+                        {{ field.errors }}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Save Employee
+            </button>
+
+        </form>
+    <div>
+</div>
+
+{% endblock %}

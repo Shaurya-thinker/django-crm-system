@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Companies</h1>
+
+<a
+    href="{% url 'create_company' %}"
+    class="btn btn-primary mb-3"
+>
+    Create Company
+</a>
+
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        value="{{ search }}"
+        placeholder="Search company"
+    >
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        Search
+    </button>
+
+</form>
+
+<br>
+
+<table class="table table-bordered">
+
+    <thead>
+
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Logo</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for company in page_obj %}
+
+            <tr>
+
+                <td>
+
+                    <a
+                        href="{% url 'company_detail' company.slug %}"
+                    >
+                        {{ company.name }}
+                    </a>
+
+                </td>
+
+                <td>
+                    {{ company.email }}
+                </td>
+
+                <td>
+                    {{ company.phone }}
+                </td>
+
+                <td>
+
+                    {% if company.logo %}
+
+                        <img
+                            src="{{ company.logo.url }}"
+                            width="80"
+                            height="80"
+                            style="object-fit: contain;"
+                        >
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+
+                <td colspan="4">
+
+                    No Companies Found
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<nav>
+
+    {% if page_obj.has_previous %}
+
+        <a
+            href="?page=1"
+            class="btn btn-secondary"
+        >
+            First
+        </a>
+
+        <a
+            href="?page={{ page_obj.previous_page_number }}"
+            class="btn btn-secondary"
+        >
+            Previous
+        </a>
+
+    {% endif %}
+
+    <span class="mx-3">
+
+        Page {{ page_obj.number }}
+
+        of
+
+        {{ page_obj.paginator.num_pages }}
+
+    </span>
+
+    {% if page_obj.has_next %}
+
+        <a
+            href="?page={{ page_obj.next_page_number }}"
+            class="btn btn-secondary"
+        >
+            Next
+        </a>
+
+        <a
+            href="?page={{ page_obj.paginator.num_pages }}"
+            class="btn btn-secondary"
+        >
+            Last
+        </a>
+
+    {% endif %}
+
+</nav>
+
+{% endblock %}

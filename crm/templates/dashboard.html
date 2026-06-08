@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load crm_tags %}
+
+{% block content %}
+
+<h1>CRM Dashboard</h1>
+
+<hr>
+
+<div class="row">
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+                    Companies
+                </h5>
+
+                <h2>
+                    {{ total_companies }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+                    Employees
+                </h5>
+
+                <h2>
+                    {{ total_employees }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card text-center">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+                    Tasks
+                </h5>
+
+                <h2>
+                    {{ total_tasks }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<h2>{{ recent_tasks_heading }}</h2>
+
+<table class="table table-striped">
+
+    <thead>
+
+        <tr>
+
+            <th>Title</th>
+
+            {% if not request.user|has_group:'Employee' %}
+
+                <th>Assigned To</th>
+
+            {% endif %}
+
+            <th>Status</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for task in recent_tasks %}
+
+            <tr>
+
+                <td>
+                    {{ task.title }}
+                </td>
+
+                {% if not request.user|has_group:'Employee' %}
+
+                    <td>
+                        {{ task.employee.user.username }}
+                    </td>
+
+                {% endif %}
+
+                <td>
+                    {{ task.get_status_display }}
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

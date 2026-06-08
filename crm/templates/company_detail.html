@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ company.name }}</h1>
+
+{% if company.logo %}
+
+    <img
+        src="{{ company.logo.url }}"
+        width="150"
+    >
+
+{% endif %}
+
+<p>
+    Email:
+    {{ company.email }}
+</p>
+
+<p>
+    Phone:
+    {{ company.phone }}
+</p>
+
+<p>
+    Address:
+    {{ company.address }}
+</p>
+<a
+    href="{% url 'update_company' company.slug %}"
+    class="btn btn-warning"
+>
+    Edit Company
+</a>
+<a
+    href="{% url 'delete_company' company.slug %}"
+    class="btn btn-danger"
+>
+    Delete Company
+</a>
+
+{% endblock %}

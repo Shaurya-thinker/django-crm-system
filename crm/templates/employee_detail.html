@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>
+    {{ employee.user.username }}
+</h1>
+
+{% if employee.profile_image %}
+
+    <img
+        src="{{ employee.profile_image.url }}"
+        width="150"
+    >
+
+{% endif %}
+
+<p>
+    Company:
+    {{ employee.company.name }}
+</p>
+
+<p>
+    Designation:
+    {{ employee.designation }}
+</p>
+
+<p>
+    Phone:
+    {{ employee.phone }}
+</p>
+
+<a
+    href="{% url 'update_employee' employee.id %}"
+    class="btn btn-warning"
+>
+    Edit Employee
+</a>
+
+<a
+    href="{% url 'delete_employee' employee.id %}"
+    class="btn btn-danger"
+>
+    Delete Employee
+</a>
+
+{% endblock %}

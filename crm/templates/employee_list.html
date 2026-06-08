@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Employees</h1>
+
+<a
+    href="{% url 'create_employee' %}"
+    class="btn btn-primary mb-3"
+>
+    Create Employee
+</a>
+
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        value="{{ search }}"
+        placeholder="Search employee"
+    >
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        Search
+    </button>
+
+</form>
+
+<br>
+
+<table class="table table-bordered">
+
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Company</th>
+            <th>Designation</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for employee in page_obj %}
+
+            <tr>
+
+                <td>
+
+                    <a
+                        href="{% url 'employee_detail' employee.id %}"
+                    >
+                        {{ employee.user.username }}
+                    </a>
+
+                </td>
+
+                <td>
+                    {{ employee.company.name }}
+                </td>
+
+                <td>
+                    {{ employee.designation }}
+                </td>
+
+                <td>
+                    {{ employee.phone }}
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="4">
+                    No Employees Found
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<nav>
+
+    {% if page_obj.has_previous %}
+
+        <a href="?page=1">
+            First
+        </a>
+
+        <a href="?page={{ page_obj.previous_page_number }}">
+            Previous
+        </a>
+
+    {% endif %}
+
+    <span>
+
+        Page {{ page_obj.number }}
+
+        of
+
+        {{ page_obj.paginator.num_pages }}
+
+    </span>
+
+    {% if page_obj.has_next %}
+
+        <a href="?page={{ page_obj.next_page_number }}">
+            Next
+        </a>
+
+        <a href="?page={{ page_obj.paginator.num_pages }}">
+            Last
+        </a>
+
+    {% endif %}
+
+</nav>
+
+{% endblock %}
