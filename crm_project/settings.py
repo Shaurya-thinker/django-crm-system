@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crm',
     'ckeditor',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -94,6 +96,19 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
     }
+}
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv(
+        'CLOUDINARY_CLOUD_NAME'
+    ),
+    'API_KEY': os.getenv(
+        'CLOUDINARY_API_KEY'
+    ),
+    'API_SECRET': os.getenv(
+        'CLOUDINARY_API_SECRET'
+    ),
 }
 
 
@@ -147,3 +162,7 @@ CKEDITOR_CONFIGS = {
         'height': 300,
     },
 }
+
+DEFAULT_FILE_STORAGE = (
+    'cloudinary_storage.storage.MediaCloudinaryStorage'
+)
