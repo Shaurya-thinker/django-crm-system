@@ -40,6 +40,20 @@
 
 ---
 
+# 🎮 Demo Credentials
+
+Explore the application using the demo accounts below.
+
+| Role | Username | Password |
+|--------|----------|----------|
+| Admin | `demo_admin` | `demo@1234` |
+| Manager | `demo_manager` | `demo@1234` |
+| Employee | `demo_employee` | `demo@1234` |
+
+> **Note:** Demo accounts are provided for evaluation purposes. Django Admin Panel access is restricted.
+
+---
+
 # 📖 Project Overview
 
 Django CRM System is a full-stack Customer Relationship Management platform designed to manage companies, employees, and tasks through a secure role-based workflow.
