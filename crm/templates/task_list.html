@@ -1,15 +1,20 @@
 {% extends 'base.html' %}
+{% load crm_tags %}
 
 {% block content %}
 
 <h1>Tasks</h1>
 
-<a
-    href="{% url 'create_task' %}"
-    class="btn btn-primary mb-3"
->
-    Create Task
-</a>
+{% if not request.user|has_group:'Employee' %}
+
+    <a
+        href="{% url 'create_task' %}"
+        class="btn btn-primary mb-3"
+    >
+        Create Task
+    </a>
+
+{% endif %}
 
 <form method="GET">
 
@@ -116,7 +121,7 @@
                 </td>
 
                 <td>
-                    {{ task.deadline }}
+                    {{ task.deadline|date:"d M Y h:i A" }}
                 </td>
 
             </tr>

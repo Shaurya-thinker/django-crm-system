@@ -34,6 +34,33 @@ class CompanyForm(forms.ModelForm):
                     'class': 'form-control'
                 }
             )
+    
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get(
+            'phone'
+        )
+
+        # Guard against None or empty values before calling string methods
+        if not phone:
+            raise forms.ValidationError(
+                'Phone number is required.'
+            )
+
+        # Ensure phone is a string for .isdigit() and length checks
+        phone_str = str(phone)
+
+        if not phone_str.isdigit():
+            raise forms.ValidationError(
+                'Phone number must contain only digits.'
+            )
+
+        if len(phone_str) != 10:
+            raise forms.ValidationError(
+                'Phone number must be exactly 10 digits.'
+            )
+
+        return phone_str
 
 
 class EmployeeForm(forms.ModelForm):
@@ -60,6 +87,33 @@ class EmployeeForm(forms.ModelForm):
                     'class': 'form-control'
                 }
             )
+            
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get(
+            'phone'
+        )
+
+        if not phone:
+            raise forms.ValidationError(
+                'Phone number is required.'
+            )
+
+        phone_str = str(phone)
+
+        if not phone_str.isdigit():
+
+            raise forms.ValidationError(
+                'Phone number must contain only digits.'
+            )
+
+        if len(phone_str) != 10:
+
+            raise forms.ValidationError(
+                'Phone number must be exactly 10 digits.'
+            )
+
+        return phone_str
     
 class TaskForm(forms.ModelForm):
 
@@ -81,9 +135,9 @@ class TaskForm(forms.ModelForm):
             'description': CKEditorWidget(
                 config_name='default'
             ),
-            'deadline': forms.DateInput(
+            'deadline': forms.DateTimeInput(
                 attrs={
-                    'type': 'date'
+                    'type': 'datetime-local'
                 }
             )
         }
@@ -101,3 +155,7 @@ class TaskForm(forms.ModelForm):
                         'class': 'form-control'
                     }
                 )
+            
+class CompanyImportForm(forms.Form):
+
+    csv_file = forms.FileField()

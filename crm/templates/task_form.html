@@ -26,7 +26,17 @@
 
             <div class="mb-3">
 
-                {{ field.label_tag }}
+                <label>
+
+                    {{ field.label }}
+
+                    {% if field.field.required %}
+
+                        <span class="text-danger">*</span>
+
+                    {% endif %}
+
+                </label>
 
                 {{ field }}
 

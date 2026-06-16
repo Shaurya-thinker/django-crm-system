@@ -19,6 +19,9 @@ from .views import (
     task_detail,
     update_task,
     delete_task,
+    export_companies_csv,
+    import_companies_csv,
+    download_company_template,
 )
 
 urlpatterns = [
@@ -49,6 +52,16 @@ urlpatterns = [
         'companies/',
         company_list,
         name='company_list'
+    ),
+    path(
+        'companies/import/',
+        import_companies_csv,
+        name='import_companies_csv'
+    ),
+    path(
+        'companies/template/',
+        download_company_template,
+        name='download_company_template'
     ),
     path(
         'companies/<slug:slug>/',
@@ -114,5 +127,10 @@ urlpatterns = [
         'tasks/<int:id>/delete/',
         delete_task,
         name='delete_task'
+    ),
+    path(
+        'export-companies/',
+        export_companies_csv,
+        name='export_companies_csv'
     ),
 ]

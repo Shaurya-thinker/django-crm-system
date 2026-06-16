@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import CompanyForm, EmployeeForm, TaskForm
-from django.http import HttpResponseForbidden
+from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm
+from django.http import HttpResponse, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
+from django.contrib import messages
+import csv
 
 from .models import (
     Company,
@@ -77,6 +79,12 @@ def custom_404(request, exception):
 
 def login_view(request):
 
+    if request.user.is_authenticated:
+
+        return redirect(
+            'dashboard'
+        )
+
     if request.method == 'POST':
 
         username = request.POST.get(
@@ -103,6 +111,11 @@ def login_view(request):
             return redirect(
                 'dashboard'
             )
+
+        messages.error(
+            request,
+            'Invalid username or password.'
+        )
 
     return render(
         request,
@@ -176,7 +189,20 @@ def create_company(request):
 
         if form.is_valid():
 
-            form.save()
+            company = form.save(
+                commit=False
+            )
+
+            country_code = request.POST.get(
+                'country_code',
+                '+91'
+            )
+
+            company.phone = (
+                f'{country_code}{company.phone}'
+            )
+
+            company.save()
 
             return redirect(
                 'dashboard'
@@ -279,7 +305,8 @@ def company_list(request):
     companies = Company.objects.all()
 
     search = request.GET.get(
-        'search'
+        'search',
+        ''
     )
 
     if search:
@@ -345,7 +372,20 @@ def create_employee(request):
 
         if form.is_valid():
 
-            form.save()
+            employee = form.save(
+                commit=False
+            )
+
+            country_code = request.POST.get(
+                'country_code',
+                '+91'
+            )
+
+            employee.phone = (
+                f'{country_code}{employee.phone}'
+            )
+
+            employee.save()
 
             return redirect(
                 'employee_list'
@@ -375,7 +415,8 @@ def employee_list(request):
     )
 
     search = request.GET.get(
-        'search'
+        'search',
+        ''
     )
 
     if search:
@@ -687,3 +728,190 @@ def delete_task(request, id):
             'task': task
         }
     )
+
+
+
+@login_required
+def export_companies_csv(request):
+
+    response = HttpResponse(
+        content_type='text/csv'
+    )
+
+    response[
+        'Content-Disposition'
+    ] = 'attachment; filename="companies.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow(
+        [
+            'Name',
+            'Email',
+            'Phone',
+            'Address'
+        ]
+    )
+
+    companies = Company.objects.all()
+
+    for company in companies:
+
+        writer.writerow(
+            [
+                company.name,
+                company.email,
+                company.phone,
+                company.address
+            ]
+        )
+
+    return response
+
+
+@login_required
+def import_companies_csv(request):
+
+    if not (
+        is_admin(request.user)
+        or
+        is_manager(request.user)
+    ):
+        raise PermissionDenied
+
+    if request.method == 'POST':
+
+        form = CompanyImportForm(
+            request.POST,
+            request.FILES
+        )
+
+        if form.is_valid():
+
+            csv_file = request.FILES[
+                'csv_file'
+            ]
+            
+            if not csv_file.name.endswith(
+                '.csv'
+            ):
+                messages.error(
+                    request,
+                    'Please upload a CSV file.'
+                )
+
+                return redirect(
+                    'import_companies_csv'
+                )
+
+            decoded_file = csv_file.read().decode(
+                'utf-8'
+            )
+
+            reader = csv.reader(
+                decoded_file.splitlines()
+            )
+
+            next(reader)
+
+            created_count = 0
+            skipped_count = 0
+
+            for row in reader:
+                if not row:
+                    continue
+                if len(row) < 4:
+
+                    skipped_count += 1
+
+                    continue
+                name = row[0]
+                email = row[1]
+                phone = row[2]
+                address = row[3]
+
+                if Company.objects.filter(
+                    name=name
+                ).exists():
+
+                    skipped_count += 1
+
+                    continue
+
+                Company.objects.create(
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    address=address
+                )
+
+                created_count += 1
+
+            messages.success(
+                request,
+                f'Import Complete! Created: {created_count}, Skipped: {skipped_count}'
+            )
+
+            return redirect(
+                'company_list'
+            )
+
+    else:
+
+        form = CompanyImportForm()
+
+    return render(
+        request,
+        'import_companies.html',
+        {
+            'form': form
+        }
+    )
+    
+    
+
+@login_required
+def download_company_template(request):
+
+    response = HttpResponse(
+        content_type='text/csv'
+    )
+
+    response[
+        'Content-Disposition'
+    ] = (
+        'attachment; filename="company_template.csv"'
+    )
+
+    writer = csv.writer(
+        response
+    )
+
+    writer.writerow(
+        [
+            'Name',
+            'Email',
+            'Phone',
+            'Address'
+        ]
+    )
+
+    writer.writerow(
+        [
+            'Google',
+            'contact@google.com',
+            '1234567890',
+            'California, USA'
+        ]
+    )
+
+    writer.writerow(
+        [
+            'Microsoft',
+            'contact@microsoft.com',
+            '9876543210',
+            'Washington, USA'
+        ]
+    )
+
+    return response

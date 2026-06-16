@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Import Companies CSV</h1>
+
+<a
+    href="{% url 'download_company_template' %}"
+    class="btn btn-info mb-3"
+>
+    Download Sample CSV
+</a>
+
+<br><br>
+
+<form
+    method="POST"
+    enctype="multipart/form-data"
+>
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        Import CSV
+    </button>
+
+</form>
+
+{% endblock %}

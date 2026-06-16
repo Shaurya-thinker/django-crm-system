@@ -126,7 +126,7 @@ class Task(models.Model):
         default='medium'
     )
 
-    deadline = models.DateField()
+    deadline = models.DateTimeField()
 
     attachment = models.FileField(
         upload_to='task_attachments/',
