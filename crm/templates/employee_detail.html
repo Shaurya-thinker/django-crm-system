@@ -30,6 +30,49 @@
     {{ employee.phone }}
 </p>
 
+<p>
+    Email:
+    {{ employee.user.email }}
+</p>
+
+<p>
+    Role:
+    {{ employee.get_role_display }}
+</p>
+
+{% if employee.role == 'representative' %}
+<p>
+    Reporting Manager:
+    {{ employee.reporting_manager.user.username }}
+</p>
+{% endif %}
+
+{% if employee.role == 'manager' %}
+
+    <h4>Representatives</h4>
+
+    <ul>
+
+        {% for rep in employee.representatives.all %}
+
+            <li>
+                <a href="{% url 'employee_detail' rep.id %}">
+                    {{ rep.user.username }}
+                </a>
+            </li>
+
+        {% empty %}
+
+            <li>
+                No representatives assigned.
+            </li>
+
+        {% endfor %}
+
+    </ul>
+
+{% endif %}
+
 <a
     href="{% url 'update_employee' employee.id %}"
     class="btn btn-warning"

@@ -36,6 +36,8 @@
     <thead>
         <tr>
             <th>Username</th>
+            <th>Role</th>
+            <th>Reporting Manager</th>
             <th>Company</th>
             <th>Designation</th>
             <th>Phone</th>
@@ -48,34 +50,35 @@
 
             <tr>
 
-                <td>
-
-                    <a
+                <td><a
                         href="{% url 'employee_detail' employee.id %}"
                     >
                         {{ employee.user.username }}
-                    </a>
+                    </a></td>
 
-                </td>
-
-                <td>
-                    {{ employee.company.name }}
-                </td>
+                <td>{{ employee.get_role_display }}</td>
 
                 <td>
-                    {{ employee.designation }}
+                    {% if employee.reporting_manager %}
+                        {{ employee.reporting_manager.user.username }}
+                    {% else %}
+                        -
+                    {% endif %}
                 </td>
 
-                <td>
-                    {{ employee.phone }}
-                </td>
+                <td>{{ employee.company.name }}</td>
+
+                <td>{{ employee.designation }}</td>
+
+                <td>{{ employee.phone }}</td>
+                
 
             </tr>
 
         {% empty %}
 
             <tr>
-                <td colspan="4">
+                <td colspan="6">
                     No Employees Found
                 </td>
             </tr>

@@ -52,9 +52,14 @@ class Company(models.Model):
     def __str__(self):
 
         return self.name
-    
+
 
 class Employee(models.Model):
+
+    ROLE_CHOICES = [
+        ('manager', 'Manager'),
+        ('representative', 'Representative'),
+    ]
 
     user = models.OneToOneField(
         User,
@@ -65,6 +70,19 @@ class Employee(models.Model):
         Company,
         on_delete=models.CASCADE,
         related_name='employees'
+    )
+
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES
+    )
+
+    reporting_manager = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='representatives'
     )
 
     designation = models.CharField(

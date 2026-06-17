@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm
+from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm, EmployeeUpdateForm
 from django.http import HttpResponse, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.contrib import messages
 import csv
-
+from django.contrib.auth.models import (
+    User,
+    Group
+)
 from .models import (
     Company,
     Employee,
@@ -372,9 +375,32 @@ def create_employee(request):
 
         if form.is_valid():
 
+            username = str(
+                form.cleaned_data.get(
+                    'username',
+                    ''
+                )
+            )
+
+            email = form.cleaned_data.get(
+                'email'
+            )
+
+            password = form.cleaned_data.get(
+                'password'
+            )
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+
             employee = form.save(
                 commit=False
             )
+
+            employee.user = user
 
             country_code = request.POST.get(
                 'country_code',
@@ -386,6 +412,16 @@ def create_employee(request):
             )
 
             employee.save()
+
+            role = employee.role.capitalize()
+
+            group = Group.objects.get(
+                name=role
+            )
+
+            user.groups.add(
+                group
+            )
 
             return redirect(
                 'employee_list'
@@ -479,7 +515,7 @@ def update_employee(request, id):
 
     if request.method == 'POST':
 
-        form = EmployeeForm(
+        form = EmployeeUpdateForm(
             request.POST,
             request.FILES,
             instance=employee
@@ -496,7 +532,7 @@ def update_employee(request, id):
 
     else:
 
-        form = EmployeeForm(
+        form = EmployeeUpdateForm(
             instance=employee
         )
 
@@ -525,7 +561,7 @@ def delete_employee(request, id):
         
     if request.method == 'POST':
 
-        employee.delete()
+        employee.user.delete()
 
         return redirect(
             'employee_list'

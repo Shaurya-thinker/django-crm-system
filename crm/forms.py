@@ -1,6 +1,7 @@
 from django import forms
 from .models import Company, Employee, Task
 from ckeditor.widgets import CKEditorWidget
+from django.contrib.auth.models import User
 
 class CompanyForm(forms.ModelForm):
 
@@ -64,14 +65,23 @@ class CompanyForm(forms.ModelForm):
 
 
 class EmployeeForm(forms.ModelForm):
+    
+    username = forms.CharField()
+
+    email = forms.EmailField()
+
+    password = forms.CharField(
+        widget=forms.PasswordInput()
+    )
 
     class Meta:
 
         model = Employee
 
         fields = [
-            'user',
             'company',
+            'role',
+            'reporting_manager',
             'designation',
             'phone',
             'profile_image'
@@ -79,6 +89,12 @@ class EmployeeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+        
+        self.fields[
+            'reporting_manager'
+        ].queryset = Employee.objects.filter(
+            role='manager'
+        )
 
         for field in self.fields.values():
 
@@ -114,6 +130,147 @@ class EmployeeForm(forms.ModelForm):
             )
 
         return phone_str
+    
+    
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        role = cleaned_data.get(
+            'role'
+        )
+
+        manager = cleaned_data.get(
+            'reporting_manager'
+        )
+
+        if role == 'representative':
+
+            if not manager:
+
+                raise forms.ValidationError(
+                    'Representative must have a reporting manager.'
+                )
+
+            if manager.representatives.count() >= 5:
+
+                raise forms.ValidationError(
+                    'Manager can have maximum 5 representatives.'
+                )
+
+        return cleaned_data
+    
+    def clean_username(self):
+
+        username = self.cleaned_data.get(
+            'username'
+        )
+
+        if User.objects.filter(
+            username=username
+        ).exists():
+
+            raise forms.ValidationError(
+                'Username already exists.'
+            )
+
+        return username
+    
+
+
+class EmployeeUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Employee
+
+        fields = [
+            'company',
+            'role',
+            'reporting_manager',
+            'designation',
+            'phone',
+            'profile_image'
+        ]
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.fields[
+            'reporting_manager'
+        ].queryset = Employee.objects.filter(
+            role='manager'
+        )
+
+        for field in self.fields.values():
+
+            field.widget.attrs.update(
+                {
+                    'class': 'form-control'
+                }
+            )
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get(
+            'phone'
+        )
+
+        phone_str = str(phone)
+
+        if not phone_str.replace(
+            '+',
+            ''
+        ).isdigit():
+
+            raise forms.ValidationError(
+                'Phone number must contain only digits.'
+            )
+
+        return phone_str
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        role = cleaned_data.get(
+            'role'
+        )
+
+        manager = cleaned_data.get(
+            'reporting_manager'
+        )
+        
+        if role == 'manager':
+
+            cleaned_data['reporting_manager'] = None
+            
+        if (
+            role == 'manager'
+            and self.instance.representatives.exists()
+        ):
+            pass
+
+        if role == 'representative':
+
+            if not manager:
+
+                raise forms.ValidationError(
+                    'Representative must have a reporting manager.'
+                )
+
+            if (
+                manager.representatives.count() >= 5
+                and manager != self.instance.reporting_manager
+            ):
+
+                raise forms.ValidationError(
+                    'Manager can have maximum 5 representatives.'
+                )
+
+        return cleaned_data
+
     
 class TaskForm(forms.ModelForm):
 
