@@ -2,14 +2,18 @@
 
 {% block content %}
 
+{% load crm_tags %}
+
 <h1>Employees</h1>
 
+{% if request.user|is_admin %}
 <a
     href="{% url 'create_employee' %}"
     class="btn btn-primary mb-3"
 >
     Create Employee
 </a>
+{% endif %}
 
 <form method="GET">
 

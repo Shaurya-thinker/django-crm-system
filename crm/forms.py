@@ -288,6 +288,58 @@ class EmployeeUpdateForm(forms.ModelForm):
 
         return cleaned_data
 
+
+class ManagerEmployeeUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Employee
+
+        fields = [
+            'designation',
+            'phone',
+            'profile_image'
+        ]
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+
+            field.widget.attrs.update(
+                {
+                    'class': 'form-control'
+                }
+            )
+
+    def clean_phone(self):
+
+        phone = self.cleaned_data.get(
+            'phone'
+        )
+
+        phone_str = str(phone)
+
+        digits_only = phone_str.replace(
+            '+',
+            ''
+        )
+
+        if not digits_only.isdigit():
+
+            raise forms.ValidationError(
+                'Phone number must contain only digits.'
+            )
+
+        if len(digits_only) < 10:
+
+            raise forms.ValidationError(
+                'Phone number is too short.'
+            )
+
+        return phone_str
+
     
 class TaskForm(forms.ModelForm):
 

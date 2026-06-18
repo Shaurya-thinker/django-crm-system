@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm, EmployeeUpdateForm
+from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm, EmployeeUpdateForm, ManagerEmployeeUpdateForm
 from django.http import HttpResponse, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -480,6 +480,17 @@ def employee_list(request):
         'company'
     )
 
+
+    if is_manager(request.user):
+
+        employees = employees.filter(
+            role='representative'
+        ).select_related(
+            'reporting_manager',
+            'user',
+            'company'
+        )
+
     search = request.GET.get(
         'search',
         ''
@@ -518,12 +529,26 @@ def employee_list(request):
 def employee_detail(request, id):
 
     if is_representative(request.user):
-     raise PermissionDenied
+
+        raise PermissionDenied
 
     employee = get_object_or_404(
         Employee,
         id=id
     )
+
+    if is_manager(request.user):
+
+        if employee.role != 'representative':
+
+            raise PermissionDenied
+
+        if (
+            employee.reporting_manager
+            != request.user.employee
+        ):
+
+            raise PermissionDenied
 
     return render(
         request,
@@ -542,17 +567,38 @@ def update_employee(request, id):
         id=id
     )
 
-    if not is_admin(request.user):
+    if is_representative(request.user):
 
         raise PermissionDenied
+    
+    if is_manager(request.user):
+
+        if (
+            employee.role != 'representative'
+            or
+            employee.reporting_manager
+            != request.user.employee
+        ):
+
+            raise PermissionDenied
 
     if request.method == 'POST':
 
-        form = EmployeeUpdateForm(
-            request.POST,
-            request.FILES,
-            instance=employee
-        )
+        if is_admin(request.user):
+
+            form = EmployeeUpdateForm(
+                request.POST,
+                request.FILES,
+                instance=employee
+            )
+
+        else:
+
+            form = ManagerEmployeeUpdateForm(
+                request.POST,
+                request.FILES,
+                instance=employee
+            )
 
         if form.is_valid():
 
@@ -565,9 +611,17 @@ def update_employee(request, id):
 
     else:
 
-        form = EmployeeUpdateForm(
-            instance=employee
-        )
+        if is_admin(request.user):
+
+            form = EmployeeUpdateForm(
+                instance=employee
+            )
+
+        else:
+
+            form = ManagerEmployeeUpdateForm(
+                instance=employee
+            )
 
     return render(
         request,

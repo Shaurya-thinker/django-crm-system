@@ -76,21 +76,30 @@
 
 {% endif %}
 
-{% if request.user|has_group:'Admin' %}
+{% if request.user|is_admin %}
 
-<a
-    href="{% url 'update_employee' employee.id %}"
-    class="btn btn-warning"
->
-    Edit Employee
-</a>
+    <a
+        href="{% url 'update_employee' employee.id %}"
+        class="btn btn-warning"
+    >
+        Edit Employee
+    </a>
 
-<a
-    href="{% url 'delete_employee' employee.id %}"
-    class="btn btn-danger"
->
-    Delete Employee
-</a>
+    <a
+        href="{% url 'delete_employee' employee.id %}"
+        class="btn btn-danger"
+    >
+        Delete Employee
+    </a>
+
+{% elif request.user|is_manager %}
+
+    <a
+        href="{% url 'update_employee' employee.id %}"
+        class="btn btn-warning"
+    >
+        Edit Employee
+    </a>
 
 {% endif %}
 

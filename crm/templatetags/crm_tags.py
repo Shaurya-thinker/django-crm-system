@@ -9,6 +9,8 @@ def has_group(user, group_name):
     return user.groups.filter(
         name=group_name
     ).exists()
+
+    
     
 @register.filter
 def is_representative(user):
@@ -35,3 +37,11 @@ def is_manager(user):
         )
 
     return False
+
+@register.filter
+def is_admin(user):
+
+    return not hasattr(
+        user,
+        'employee'
+    )
