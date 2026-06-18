@@ -327,7 +327,10 @@ def delete_company(request, slug):
 
 @login_required
 def company_list(request):
-
+    
+    if is_representative(request.user):
+        raise PermissionDenied
+   
     companies = Company.objects.all()
 
     search = request.GET.get(
@@ -366,6 +369,9 @@ def company_list(request):
 
 @login_required
 def company_detail(request, slug):
+    
+    if is_representative(request.user):
+        raise PermissionDenied
 
     company = get_object_or_404(
         Company,
@@ -436,14 +442,12 @@ def create_employee(request):
 
             employee.save()
 
-            role = employee.role.capitalize()
-
-            group = Group.objects.get(
-                name=role
+            employee_group = Group.objects.get(
+                name='Employee'
             )
 
             user.groups.add(
-                group
+                employee_group
             )
 
             return redirect(
@@ -467,6 +471,9 @@ def create_employee(request):
 
 @login_required
 def employee_list(request):
+
+    if is_representative(request.user):
+        raise PermissionDenied
 
     employees = Employee.objects.select_related(
         'user',
@@ -509,6 +516,9 @@ def employee_list(request):
 
 @login_required
 def employee_detail(request, id):
+
+    if is_representative(request.user):
+     raise PermissionDenied
 
     employee = get_object_or_404(
         Employee,

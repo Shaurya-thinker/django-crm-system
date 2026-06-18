@@ -5,7 +5,7 @@
 
 <h1>Tasks</h1>
 
-    {% if not request.user|has_group:'Representative' %}
+    {% if not request.user|is_representative %}
 
     <a
         href="{% url 'create_task' %}"
@@ -84,7 +84,9 @@
         <tr>
 
             <th>Title</th>
-            <th>Employee</th>
+            {% if not request.user|is_representative %}
+                <th>Employee</th>
+            {% endif %}
             <th>Status</th>
             <th>Priority</th>
             <th>Deadline</th>
@@ -109,9 +111,11 @@
 
                 </td>
 
-                <td>
-                    {{ task.employee.user.username }}
-                </td>
+                {% if not request.user|is_representative %}
+                    <td>
+                        {{ task.employee.user.username }}
+                    </td>
+                {% endif %}
 
                 <td>
                     {{ task.get_status_display }}

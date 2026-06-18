@@ -83,7 +83,7 @@
 
             <th>Title</th>
 
-            {% if not request.user|has_group:'Representative' %}
+            {% if not request.user|is_representative %}
 
                 <th>Assigned To</th>
 
@@ -105,7 +105,7 @@
                     {{ task.title }}
                 </td>
 
-                {% if not request.user|has_group:'Representative' %}
+                {% if not request.user|is_representative %}
 
                     <td>
                         {{ task.employee.user.username }}

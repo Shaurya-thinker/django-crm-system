@@ -23,19 +23,27 @@ class CompanyAdmin(admin.ModelAdmin):
         )
     }
     
-
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
 
     list_display = (
         'user',
+        'role',
+        'reporting_manager',
         'company',
-        'designation'
+        'designation',
+        'phone'
     )
 
     search_fields = (
         'user__username',
+        'user__email',
         'designation'
+    )
+
+    list_filter = (
+        'role',
+        'company'
     )
     
     
@@ -48,7 +56,8 @@ class TaskAdmin(admin.ModelAdmin):
         'employee',
         'status',
         'priority',
-        'deadline'
+        'deadline',
+        'created_at'
     )
 
     search_fields = (

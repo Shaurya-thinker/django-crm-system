@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load crm_tags %}
 {% block content %}
+{% load crm_tags %}
 
 <h1>{{ task.title }}</h1>
 
@@ -49,7 +49,7 @@
 
 {% endif %}
 
-{% if not request.user|has_group:'Representative' %}
+{% if not request.user|is_representative %}
 
     <a
         href="{% url 'update_task' task.id %}"

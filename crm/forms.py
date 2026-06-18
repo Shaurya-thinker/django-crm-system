@@ -145,6 +145,11 @@ class EmployeeForm(forms.ModelForm):
             'reporting_manager'
         )
 
+        if role == 'manager':
+
+            cleaned_data['reporting_manager'] = None
+
+
         if role == 'representative':
 
             if not manager:
@@ -220,13 +225,21 @@ class EmployeeUpdateForm(forms.ModelForm):
 
         phone_str = str(phone)
 
-        if not phone_str.replace(
+        digits_only = phone_str.replace(
             '+',
             ''
-        ).isdigit():
+        )
+
+        if not digits_only.isdigit():
 
             raise forms.ValidationError(
                 'Phone number must contain only digits.'
+            )
+
+        if len(digits_only) < 10:
+
+            raise forms.ValidationError(
+                'Phone number is too short.'
             )
 
         return phone_str
@@ -248,10 +261,13 @@ class EmployeeUpdateForm(forms.ModelForm):
             cleaned_data['reporting_manager'] = None
             
         if (
-            role == 'manager'
+            self.instance.role == 'manager'
+            and role != 'manager'
             and self.instance.representatives.exists()
         ):
-            pass
+            raise forms.ValidationError(
+                'Cannot change role while representatives are assigned.'
+            )
 
         if role == 'representative':
 

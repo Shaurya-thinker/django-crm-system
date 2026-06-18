@@ -24,7 +24,7 @@
                 Dashboard
             </a>
 
-            {% if not request.user|has_group:'Employee' %}
+            {% if not request.user|is_representative %}
 
                 <a
                     class="btn btn-light me-2"
@@ -41,7 +41,6 @@
                 </a>
 
             {% endif %}
-
             <a
                 class="btn btn-light me-2"
                 href="{% url 'task_list' %}"

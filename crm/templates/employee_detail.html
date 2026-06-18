@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load crm_tags %}
 
 <h1>
     {{ employee.user.username }}
@@ -40,11 +41,13 @@
     {{ employee.get_role_display }}
 </p>
 
-{% if employee.role == 'representative' %}
+{% if employee.reporting_manager %}
+
 <p>
     Reporting Manager:
     {{ employee.reporting_manager.user.username }}
 </p>
+
 {% endif %}
 
 {% if employee.role == 'manager' %}
@@ -73,6 +76,8 @@
 
 {% endif %}
 
+{% if request.user|has_group:'Admin' %}
+
 <a
     href="{% url 'update_employee' employee.id %}"
     class="btn btn-warning"
@@ -86,5 +91,7 @@
 >
     Delete Employee
 </a>
+
+{% endif %}
 
 {% endblock %}

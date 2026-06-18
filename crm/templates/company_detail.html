@@ -27,17 +27,24 @@
     Address:
     {{ company.address }}
 </p>
-<a
-    href="{% url 'update_company' company.slug %}"
-    class="btn btn-warning"
->
-    Edit Company
-</a>
-<a
-    href="{% url 'delete_company' company.slug %}"
-    class="btn btn-danger"
->
-    Delete Company
-</a>
+{% load crm_tags %}
+
+{% if not request.user|is_representative %}
+
+    <a
+        href="{% url 'update_company' company.slug %}"
+        class="btn btn-warning"
+    >
+        Edit Company
+    </a>
+
+    <a
+        href="{% url 'delete_company' company.slug %}"
+        class="btn btn-danger"
+    >
+        Delete Company
+    </a>
+
+{% endif %}
 
 {% endblock %}

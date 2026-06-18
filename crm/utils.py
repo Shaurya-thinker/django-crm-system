@@ -7,23 +7,18 @@ def is_admin(user):
 
 def is_manager(user):
 
-    return user.groups.filter(
-        name='Manager'
-    ).exists()
-
-
-def is_employee(user):
-
-    return user.groups.filter(
-        name='Employee'
-    ).exists()
+    return (
+        hasattr(user, 'employee')
+        and user.employee.role == 'manager'
+    )
     
     
 def is_representative(user):
 
-    return user.groups.filter(
-        name='Representative'
-    ).exists()
+    return (
+        hasattr(user, 'employee')
+        and user.employee.role == 'representative'
+    )
 
 
 def manager_or_admin(user):
