@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.contrib import messages
 import csv
+from .utils import * 
 from django.contrib.auth.models import (
     User,
     Group
@@ -30,36 +31,6 @@ from django.shortcuts import (
     redirect,
     get_object_or_404
 )
-
-
-def is_admin(user):
-
-    return user.groups.filter(
-        name='Admin'
-    ).exists()
-
-
-def is_manager(user):
-
-    return user.groups.filter(
-        name='Manager'
-    ).exists()
-
-
-def is_employee(user):
-
-    return user.groups.filter(
-        name='Employee'
-    ).exists()
-
-
-def manager_or_admin(user):
-
-    return (
-        is_admin(user)
-        or
-        is_manager(user)
-    )
 
 
 def custom_403(request, exception):
@@ -140,11 +111,49 @@ def dashboard(request):
 
     total_companies = Company.objects.count()
 
-    total_employees = Employee.objects.count()
+    if (
+        is_representative(request.user)
+        and hasattr(request.user, 'employee')
+    ):
 
-    total_tasks = Task.objects.count()
+        total_employees = 1
 
-    if is_employee(request.user):
+    elif (
+        is_manager(request.user)
+        and hasattr(request.user, 'employee')
+    ):
+
+        total_employees = Employee.objects.filter(
+            reporting_manager=request.user.employee
+        ).count()
+
+    else:
+
+        total_employees = Employee.objects.count()
+
+    if (
+        is_representative(request.user)
+        and hasattr(request.user, 'employee')
+    ):
+
+        total_tasks = Task.objects.filter(
+            employee=request.user.employee
+        ).count()
+
+    elif (
+        is_manager(request.user)
+        and hasattr(request.user, 'employee')
+    ):
+
+        total_tasks = Task.objects.filter(
+            employee__reporting_manager=request.user.employee
+        ).count()
+
+    else:
+
+        total_tasks = Task.objects.count()
+
+    if is_representative(request.user):
 
         recent_tasks_heading = 'My Recent Tasks'
 
@@ -154,9 +163,23 @@ def dashboard(request):
             '-created_at'
         )[:5]
 
+    elif is_manager(request.user):
+
+        recent_tasks_heading = (
+            'My Team Recent Tasks'
+        )
+
+        recent_tasks = Task.objects.filter(
+            employee__reporting_manager=request.user.employee
+        ).order_by(
+            '-created_at'
+        )[:5]
+
     else:
 
-        recent_tasks_heading = 'Recent Tasks'
+        recent_tasks_heading = (
+            'Recent Tasks'
+        )
 
         recent_tasks = Task.objects.order_by(
             '-created_at'
@@ -589,7 +612,8 @@ def create_task(request):
 
         form = TaskForm(
             request.POST,
-            request.FILES
+            request.FILES,
+            user=request.user
         )
 
         if form.is_valid():
@@ -602,7 +626,9 @@ def create_task(request):
 
     else:
 
-        form = TaskForm()
+        form = TaskForm(
+            user=request.user
+        )
 
     return render(
         request,
@@ -623,10 +649,18 @@ def task_list(request):
         'employee__company'
     )
     
-    if is_employee(request.user):
+    if is_representative(request.user):
 
         tasks = tasks.filter(
             employee=request.user.employee
+        )
+
+    elif is_manager(request.user):
+
+        manager = request.user.employee
+
+        tasks = tasks.filter(
+            employee__reporting_manager=manager
         )
     
 
@@ -683,6 +717,18 @@ def task_detail(request, id):
         id=id
     )
 
+    if is_representative(request.user):
+
+        if task.employee != request.user.employee:
+
+            raise PermissionDenied
+
+    elif is_manager(request.user):
+
+        if task.employee.reporting_manager != request.user.employee:
+
+            raise PermissionDenied
+
     return render(
         request,
         'task_detail.html',
@@ -698,6 +744,17 @@ def update_task(request, id):
         Task,
         id=id
     )
+    
+    if is_representative(request.user):
+
+        raise PermissionDenied
+
+    if is_manager(request.user):
+
+        if task.employee.reporting_manager != request.user.employee:
+
+            raise PermissionDenied
+
 
     if not manager_or_admin(request.user):
 
@@ -708,7 +765,8 @@ def update_task(request, id):
         form = TaskForm(
             request.POST,
             request.FILES,
-            instance=task
+            instance=task,
+            user=request.user
         )
 
         if form.is_valid():
@@ -723,7 +781,8 @@ def update_task(request, id):
     else:
 
         form = TaskForm(
-            instance=task
+            instance=task,
+            user=request.user
         )
 
     return render(
@@ -743,6 +802,16 @@ def delete_task(request, id):
         Task,
         id=id
     )
+    
+    if is_representative(request.user):
+
+        raise PermissionDenied
+
+    if is_manager(request.user):
+
+        if task.employee.reporting_manager != request.user.employee:
+
+            raise PermissionDenied
     
 
     if not manager_or_admin(request.user):

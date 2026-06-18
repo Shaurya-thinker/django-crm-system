@@ -2,6 +2,7 @@ from django import forms
 from .models import Company, Employee, Task
 from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.models import User
+from .utils import * 
 
 class CompanyForm(forms.ModelForm):
 
@@ -301,7 +302,27 @@ class TaskForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs)
+        user = kwargs.pop(
+            'user',
+            None
+        )
+        # keep user on the form instance for use in clean methods
+        self.user = user
+        super().__init__(
+            *args,
+            **kwargs
+        )
+
+        if user:
+
+            if is_manager(user):
+
+                self.fields[
+                    'employee'
+                ].queryset = Employee.objects.filter(
+                    role='representative',
+                    reporting_manager=user.employee
+                )
 
         for name, field in self.fields.items():
 
@@ -312,6 +333,23 @@ class TaskForm(forms.ModelForm):
                         'class': 'form-control'
                     }
                 )
+        
+    def clean_employee(self):
+
+        employee = self.cleaned_data.get(
+            'employee'
+        )
+
+        user = getattr(self, 'user', None)
+
+        # ensure employee is present before accessing its attributes
+        if employee and user and is_manager(user):
+            if employee.reporting_manager != user.employee:
+                raise forms.ValidationError(
+                    'You can only assign tasks to your representatives.'
+                )
+
+        return employee
             
 class CompanyImportForm(forms.Form):
 
