@@ -27,6 +27,11 @@
     Address:
     {{ company.address }}
 </p>
+
+<p>
+    Manager:
+    {{ company.manager.user.username }}
+</p>
 {% load crm_tags %}
 
 {% if not request.user|is_representative %}

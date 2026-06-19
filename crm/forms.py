@@ -12,6 +12,7 @@ class CompanyForm(forms.ModelForm):
 
         fields = [
             'name',
+            'manager',
             'email',
             'phone',
             'address',
@@ -28,6 +29,12 @@ class CompanyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+        
+        self.fields[
+            'manager'
+        ].queryset = Employee.objects.filter(
+            role='manager'
+        )
 
         for field in self.fields.values():
 

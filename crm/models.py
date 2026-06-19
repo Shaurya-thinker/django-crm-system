@@ -8,6 +8,17 @@ class Company(models.Model):
     name = models.CharField(
         max_length=200
     )
+    
+    manager = models.ForeignKey(
+        'Employee',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='companies',
+        limit_choices_to={
+            'role': 'manager'
+        }
+    )
 
     slug = models.SlugField(
         blank=True

@@ -58,6 +58,7 @@ def login_view(request):
         return redirect(
             'dashboard'
         )
+    
 
     if request.method == 'POST':
 
@@ -74,6 +75,21 @@ def login_view(request):
             username=username,
             password=password
         )
+        
+        if user and (
+            not user.is_superuser
+            and
+            not hasattr(user, 'employee')
+        ):
+
+            logout(request)
+
+            messages.error(
+                request,
+                'No role assigned to this account.'
+            )
+
+            return redirect('login')
 
         if user:
 
@@ -260,6 +276,12 @@ def update_company(request, slug):
         Company,
         slug=slug
     )
+    
+    if is_manager(request.user):
+
+        if company.manager != request.user.employee:
+
+            raise PermissionDenied
 
     if request.method == 'POST':
 
@@ -306,6 +328,12 @@ def delete_company(request, slug):
         Company,
         slug=slug
     )
+    
+    if is_manager(request.user):
+
+        if company.manager != request.user.employee:
+
+            raise PermissionDenied
 
     if request.method == 'POST':
 
@@ -331,7 +359,15 @@ def company_list(request):
     if is_representative(request.user):
         raise PermissionDenied
    
-    companies = Company.objects.all()
+    if is_manager(request.user):
+
+        companies = Company.objects.filter(
+            manager=request.user.employee
+        )
+
+    else:
+
+        companies = Company.objects.all()
 
     search = request.GET.get(
         'search',
@@ -377,6 +413,12 @@ def company_detail(request, slug):
         Company,
         slug=slug
     )
+    
+    if is_manager(request.user):
+
+        if company.manager != request.user.employee:
+
+            raise PermissionDenied
 
     return render(
         request,
