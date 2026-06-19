@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.contrib import messages
 import csv
+from django.db import transaction
 from .utils import * 
 from django.contrib.auth.models import (
     User,
@@ -446,51 +447,53 @@ def create_employee(request):
 
         if form.is_valid():
 
-            username = str(
-                form.cleaned_data.get(
-                    'username',
-                    ''
+            with transaction.atomic():
+
+                username = str(
+                    form.cleaned_data.get(
+                        'username',
+                        ''
+                    )
                 )
-            )
 
-            email = form.cleaned_data.get(
-                'email'
-            )
+                email = form.cleaned_data.get(
+                    'email'
+                )
 
-            password = form.cleaned_data.get(
-                'password'
-            )
+                password = form.cleaned_data.get(
+                    'password'
+                )
 
-            user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password
-            )
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password
+                )
 
-            employee = form.save(
-                commit=False
-            )
+                employee = form.save(
+                    commit=False
+                )
 
-            employee.user = user
+                employee.user = user
 
-            country_code = request.POST.get(
-                'country_code',
-                '+91'
-            )
+                country_code = request.POST.get(
+                    'country_code',
+                    '+91'
+                )
 
-            employee.phone = (
-                f'{country_code}{employee.phone}'
-            )
+                employee.phone = (
+                    f'{country_code}{employee.phone}'
+                )
 
-            employee.save()
+                employee.save()
 
-            employee_group = Group.objects.get(
-                name='Employee'
-            )
+                employee_group = Group.objects.get(
+                    name='Employee'
+                )
 
-            user.groups.add(
-                employee_group
-            )
+                user.groups.add(
+                    employee_group
+                )
 
             return redirect(
                 'employee_list'
