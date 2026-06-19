@@ -30,7 +30,6 @@ class EmployeeAdmin(admin.ModelAdmin):
         'user',
         'role',
         'reporting_manager',
-        'company',
         'designation',
         'phone'
     )
@@ -43,7 +42,6 @@ class EmployeeAdmin(admin.ModelAdmin):
 
     list_filter = (
         'role',
-        'company'
     )
     
     
@@ -53,6 +51,7 @@ class TaskAdmin(admin.ModelAdmin):
 
     list_display = (
         'title',
+        'company',
         'employee',
         'status',
         'priority',
@@ -62,6 +61,7 @@ class TaskAdmin(admin.ModelAdmin):
 
     search_fields = (
         'title',
+        'company__name',
         'employee__user__username'
     )
 

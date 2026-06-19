@@ -87,7 +87,6 @@ class EmployeeForm(forms.ModelForm):
         model = Employee
 
         fields = [
-            'company',
             'role',
             'reporting_manager',
             'designation',
@@ -198,7 +197,6 @@ class EmployeeUpdateForm(forms.ModelForm):
         model = Employee
 
         fields = [
-            'company',
             'role',
             'reporting_manager',
             'designation',
@@ -357,6 +355,7 @@ class TaskForm(forms.ModelForm):
         fields = [
             'title',
             'description',
+            'company',
             'employee',
             'status',
             'priority',
@@ -393,6 +392,12 @@ class TaskForm(forms.ModelForm):
             if is_manager(user):
 
                 self.fields[
+                    'company'
+                ].queryset = Company.objects.filter(
+                    manager=user.employee
+                )
+
+                self.fields[
                     'employee'
                 ].queryset = Employee.objects.filter(
                     role='representative',
@@ -409,22 +414,51 @@ class TaskForm(forms.ModelForm):
                     }
                 )
         
-    def clean_employee(self):
+    def clean(self):
 
-        employee = self.cleaned_data.get(
+        cleaned_data = super().clean()
+
+        employee = cleaned_data.get(
             'employee'
         )
 
-        user = getattr(self, 'user', None)
+        company = cleaned_data.get(
+            'company'
+        )
 
-        # ensure employee is present before accessing its attributes
-        if employee and user and is_manager(user):
-            if employee.reporting_manager != user.employee:
+        user = getattr(
+            self,
+            'user',
+            None
+        )
+
+        if (
+            employee
+            and user
+            and is_manager(user)
+        ):
+
+            if (
+                employee.reporting_manager
+                != user.employee
+            ):
+
                 raise forms.ValidationError(
                     'You can only assign tasks to your representatives.'
                 )
 
-        return employee
+        if company and employee:
+
+            if (
+                company.manager
+                != employee.reporting_manager
+            ):
+
+                raise forms.ValidationError(
+                    'Representative and Company must belong to the same manager.'
+                )
+
+        return cleaned_data
             
 class CompanyImportForm(forms.Form):
 

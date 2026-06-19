@@ -519,7 +519,6 @@ def employee_list(request):
 
     employees = Employee.objects.select_related(
         'user',
-        'company'
     )
 
 
@@ -530,7 +529,6 @@ def employee_list(request):
         ).select_related(
             'reporting_manager',
             'user',
-            'company'
         )
 
     search = request.GET.get(
@@ -729,6 +727,9 @@ def create_task(request):
             return redirect(
                 'task_list'
             )
+        else:
+            print(form.errors)
+            print(form.non_field_errors())
 
     else:
 
@@ -750,9 +751,9 @@ def create_task(request):
 def task_list(request):
 
     tasks = Task.objects.select_related(
+        'company',
         'employee',
-        'employee__user',
-        'employee__company'
+        'employee__user'
     )
     
     if is_representative(request.user):

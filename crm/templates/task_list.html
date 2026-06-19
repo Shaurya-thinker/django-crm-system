@@ -84,6 +84,7 @@
         <tr>
 
             <th>Title</th>
+            <th>Company</th>
             {% if not request.user|is_representative %}
                 <th>Employee</th>
             {% endif %}
@@ -109,6 +110,10 @@
                         {{ task.title }}
                     </a>
 
+                </td>
+
+                <td>
+                    {{ task.company.name }}
                 </td>
 
                 {% if not request.user|is_representative %}

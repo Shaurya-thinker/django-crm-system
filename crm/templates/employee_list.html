@@ -42,7 +42,6 @@
             <th>Username</th>
             <th>Role</th>
             <th>Reporting Manager</th>
-            <th>Company</th>
             <th>Designation</th>
             <th>Phone</th>
         </tr>
@@ -70,8 +69,6 @@
                     {% endif %}
                 </td>
 
-                <td>{{ employee.company.name }}</td>
-
                 <td>{{ employee.designation }}</td>
 
                 <td>{{ employee.phone }}</td>
@@ -82,7 +79,7 @@
         {% empty %}
 
             <tr>
-                <td colspan="6">
+                <td colspan="5">
                     No Employees Found
                 </td>
             </tr>

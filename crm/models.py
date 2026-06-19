@@ -77,11 +77,6 @@ class Employee(models.Model):
         on_delete=models.CASCADE
     )
 
-    company = models.ForeignKey(
-        Company,
-        on_delete=models.CASCADE,
-        related_name='employees'
-    )
 
     role = models.CharField(
         max_length=20,
@@ -136,6 +131,14 @@ class Task(models.Model):
     )
 
     description = models.TextField()
+    
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name='tasks',
+        null=True,
+        blank=True
+    )
 
     employee = models.ForeignKey(
         Employee,
