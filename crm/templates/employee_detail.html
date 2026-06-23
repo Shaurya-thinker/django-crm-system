@@ -1,101 +1,192 @@
 {% extends 'base.html' %}
-
-{% block content %}
 {% load crm_tags %}
 
-<h1>
-    {{ employee.user.username }}
-</h1>
+{% block content %}
 
-{% if employee.profile_image %}
+<div class="container mt-4">
 
-    <img
-        src="{{ employee.profile_image.url }}"
-        width="150"
-    >
+    <div class="row justify-content-center">
 
-{% endif %}
+        <div class="col-md-8">
 
-<p>
-    Designation:
-    {{ employee.designation }}
-</p>
+            <div class="card shadow">
 
-<p>
-    Phone:
-    {{ employee.phone }}
-</p>
+                <div class="card-body p-4">
 
-<p>
-    Email:
-    {{ employee.user.email }}
-</p>
+                    <div class="text-center">
 
-<p>
-    Role:
-    {{ employee.get_role_display }}
-</p>
+                        {% if employee.profile_image %}
 
-{% if employee.reporting_manager %}
+                            <img
+                                src="{{ employee.profile_image.url }}"
+                                class="rounded-circle shadow"
+                                width="120"
+                                height="120"
+                                style="object-fit: cover;"
+                            >
 
-<p>
-    Reporting Manager:
-    {{ employee.reporting_manager.user.username }}
-</p>
+                        {% else %}
 
-{% endif %}
+                            <div
+                                class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
+                                style="
+                                    width:120px;
+                                    height:120px;
+                                    font-size:48px;
+                                "
+                            >
+                                {{ employee.user.username|first|upper }}
+                            </div>
 
-{% if employee.role == 'manager' %}
+                        {% endif %}
 
-    <h4>Representatives</h4>
+                        <h2 class="mt-3">
+                            {{ employee.user.username }}
+                        </h2>
 
-    <ul>
+                        <span class="badge bg-success">
+                            {{ employee.get_role_display }}
+                        </span>
 
-        {% for rep in employee.representatives.all %}
+                    </div>
 
-            <li>
-                <a href="{% url 'employee_detail' rep.id %}">
-                    {{ rep.user.username }}
-                </a>
-            </li>
+                    <hr>
 
-        {% empty %}
+                    <div class="row">
 
-            <li>
-                No representatives assigned.
-            </li>
+                        <div class="col-md-6">
 
-        {% endfor %}
+                            <p>
+                                <strong>Email:</strong>
+                                <br>
+                                {{ employee.user.email }}
+                            </p>
 
-    </ul>
+                        </div>
 
-{% endif %}
+                        <div class="col-md-6">
 
-{% if request.user|is_admin %}
+                            <p>
+                                <strong>Phone:</strong>
+                                <br>
+                                {{ employee.phone }}
+                            </p>
 
-    <a
-        href="{% url 'update_employee' employee.id %}"
-        class="btn btn-warning"
-    >
-        Edit Employee
-    </a>
+                        </div>
 
-    <a
-        href="{% url 'delete_employee' employee.id %}"
-        class="btn btn-danger"
-    >
-        Delete Employee
-    </a>
+                    </div>
 
-{% elif request.user|is_manager %}
+                    <div class="row">
 
-    <a
-        href="{% url 'update_employee' employee.id %}"
-        class="btn btn-warning"
-    >
-        Edit Employee
-    </a>
+                        <div class="col-md-6">
 
-{% endif %}
+                            <p>
+                                <strong>Designation:</strong>
+                                <br>
+                                {{ employee.designation }}
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+                                <strong>Role:</strong>
+                                <br>
+                                {{ employee.get_role_display }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% if employee.reporting_manager %}
+
+                    <div class="alert alert-info">
+
+                        <strong>Reporting Manager:</strong>
+                        {{ employee.reporting_manager.user.username }}
+
+                    </div>
+
+                    {% endif %}
+
+                    {% if employee.role == 'manager' %}
+
+                    <h4 class="mt-4">
+                        Representatives
+                    </h4>
+
+                    <ul class="list-group">
+
+                        {% for rep in employee.representatives.all %}
+
+                        <li class="list-group-item">
+
+                            <a
+                                href="{% url 'employee_detail' rep.id %}"
+                                class="text-decoration-none"
+                            >
+                                {{ rep.user.username }}
+                            </a>
+
+                            <span class="text-muted">
+                                ({{ rep.designation }})
+                            </span>
+
+                        </li>
+
+                        {% empty %}
+
+                        <li class="list-group-item">
+                            No representatives assigned.
+                        </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                    {% endif %}
+
+                    <div class="mt-4 d-flex gap-2">
+
+                        {% if request.user|is_admin %}
+
+                            <a
+                                href="{% url 'update_employee' employee.id %}"
+                                class="btn btn-warning"
+                            >
+                                Edit Employee
+                            </a>
+
+                            <a
+                                href="{% url 'delete_employee' employee.id %}"
+                                class="btn btn-danger"
+                            >
+                                Delete Employee
+                            </a>
+
+                        {% elif request.user|is_manager %}
+
+                            <a
+                                href="{% url 'update_employee' employee.id %}"
+                                class="btn btn-warning"
+                            >
+                                Edit Employee
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}

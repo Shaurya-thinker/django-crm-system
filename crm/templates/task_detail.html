@@ -1,70 +1,149 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load crm_tags %}
 
-<h1>{{ task.title }}</h1>
+{% block content %}
 
-<p>
-    Description:
-    {{ task.description | safe }}
-</p>
+<div class="container mt-4">
 
-<p>
-    Employee:
-    {{ task.employee.user.username }}
-</p>
+    <div class="row justify-content-center">
 
-<p>
-    Company:
-    {{ task.company.name }}
-</p>
+        <div class="col-md-8">
 
-<p>
-    Status:
-    {{ task.get_status_display }}
-</p>
+            <div class="card shadow">
 
-<p>
-    Priority:
-    {{ task.get_priority_display }}
-</p>
+                <div class="card-body p-4">
 
-<p>
-    Deadline:
-    {{ task.deadline|date:"F d, Y h:i A" }}
-</p>
+                    <div class="text-center">
 
-{% if task.attachment %}
+                        <h2>
+                            {{ task.title }}
+                        </h2>
 
-    <p>
+                        <span class="badge bg-primary me-2">
+                            {{ task.get_status_display }}
+                        </span>
 
-        <a
-            href="{{ task.attachment.url }}"
-            target="_blank"
-        >
-            View Attachment
-        </a>
+                        <span class="badge bg-warning text-dark">
+                            {{ task.get_priority_display }}
+                        </span>
 
-    </p>
+                    </div>
 
-{% endif %}
+                    <hr>
 
-{% if not request.user|is_representative %}
+                    <div class="mb-4">
 
-    <a
-        href="{% url 'update_task' task.id %}"
-        class="btn btn-warning"
-    >
-        Edit Task
-    </a>
+                        <h5>Description</h5>
 
-    <a
-        href="{% url 'delete_task' task.id %}"
-        class="btn btn-danger"
-    >
-        Delete Task
-    </a>
+                        <div class="border rounded p-3 bg-light">
 
-{% endif %}
+                            {{ task.description|safe }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <p>
+                                <strong>Employee:</strong>
+                                <br>
+                                {{ task.employee.user.username }}
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+                                <strong>Company:</strong>
+                                <br>
+                                {{ task.company.name }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <p>
+                                <strong>Status:</strong>
+                                <br>
+                                {{ task.get_status_display }}
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+                                <strong>Priority:</strong>
+                                <br>
+                                {{ task.get_priority_display }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="alert alert-info">
+
+                        <strong>Deadline:</strong>
+                        {{ task.deadline|date:"F d, Y h:i A" }}
+
+                    </div>
+
+                    {% if task.attachment %}
+
+                    <div class="mb-3">
+
+                        <a
+                            href="{{ task.attachment.url }}"
+                            target="_blank"
+                            class="btn btn-outline-primary"
+                        >
+                            View Attachment
+                        </a>
+
+                    </div>
+
+                    {% endif %}
+
+                    {% if not request.user|is_representative %}
+
+                    <div class="mt-4 d-flex gap-2">
+
+                        <a
+                            href="{% url 'update_task' task.id %}"
+                            class="btn btn-warning"
+                        >
+                            Edit Task
+                        </a>
+
+                        <a
+                            href="{% url 'delete_task' task.id %}"
+                            class="btn btn-danger"
+                        >
+                            Delete Task
+                        </a>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}
