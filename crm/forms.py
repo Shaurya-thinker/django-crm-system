@@ -188,6 +188,22 @@ class EmployeeForm(forms.ModelForm):
 
         return username
     
+    def clean_email(self):
+
+        email = self.cleaned_data.get(
+            'email'
+        )
+
+        if User.objects.filter(
+            email=email
+        ).exists():
+
+            raise forms.ValidationError(
+                'Email already exists.'
+            )
+
+        return email
+    
 
 
 class EmployeeUpdateForm(forms.ModelForm):
@@ -461,5 +477,5 @@ class TaskForm(forms.ModelForm):
         return cleaned_data
             
 class CompanyImportForm(forms.Form):
-
+    
     csv_file = forms.FileField()

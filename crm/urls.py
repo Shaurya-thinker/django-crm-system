@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 
 from .views import (
     dashboard,
@@ -22,6 +23,9 @@ from .views import (
     export_companies_csv,
     import_companies_csv,
     download_company_template,
+    CustomPasswordResetView,
+    CustomPasswordResetDoneView,
+    my_profile,
 )
 
 urlpatterns = [
@@ -31,7 +35,13 @@ urlpatterns = [
         dashboard,
         name='dashboard'
     ),
-
+    
+    path(
+        'profile/',
+        my_profile,
+        name='my_profile'
+    ),
+    
     path(
         'login/',
         login_view,
@@ -132,5 +142,39 @@ urlpatterns = [
         'export-companies/',
         export_companies_csv,
         name='export_companies_csv'
+    ),
+    path(
+        'password-reset/',
+        CustomPasswordResetView.as_view(
+            template_name='password_reset.html',
+            email_template_name='password_reset_email.html',
+            success_url='/password-reset/done/'
+        ),
+        name='password_reset'
+    ),
+
+    path(
+        'password-reset/done/',
+        CustomPasswordResetDoneView.as_view(
+            template_name='password_reset_done.html'
+        ),
+        name='password_reset_done'
+    ),
+
+    path(
+        'reset/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name='password_reset_confirm.html',
+            success_url='/reset-complete/'
+        ),
+        name='password_reset_confirm'
+    ),
+
+    path(
+        'reset-complete/',
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name='password_reset_complete.html'
+        ),
+        name='password_reset_complete'
     ),
 ]

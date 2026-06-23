@@ -6,6 +6,10 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.contrib import messages
 import csv
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
+from django.contrib import messages
 from django.db import transaction
 from .utils import * 
 from django.contrib.auth.models import (
@@ -121,6 +125,117 @@ def logout_view(request):
     return redirect(
         'login'
     )
+    
+
+@login_required
+def my_profile(request):
+
+    if request.user.is_superuser:
+
+        return render(
+            request,
+            'admin_profile.html'
+        )
+
+    return render(
+        request,
+        'my_profile.html',
+        {
+            'employee': request.user.employee
+        }
+    )
+
+
+class CustomPasswordResetView(
+    PasswordResetView
+):
+
+    template_name = 'password_reset.html'
+    email_template_name = 'password_reset_email.html'
+    success_url = '/password-reset/done/'
+
+
+    def form_valid(self, form):
+
+        last_reset = self.request.session.get(
+            'last_password_reset'
+        )
+
+        if last_reset:
+
+            last_reset_time = timezone.datetime.fromisoformat(
+                last_reset
+            )
+
+            if (
+                timezone.now()
+                <
+                last_reset_time + timedelta(seconds=60)
+            ):
+
+                remaining = int(
+                    (
+                        last_reset_time
+                        + timedelta(seconds=60)
+                        - timezone.now()
+                    ).total_seconds()
+                )
+
+                messages.error(
+                    self.request,
+                    f'Please wait {remaining} seconds before requesting another reset email.'
+                )
+
+                return self.form_invalid(form)
+
+        self.request.session[
+            'last_password_reset'
+        ] = timezone.now().isoformat()
+
+        return super().form_valid(form)
+
+
+class CustomPasswordResetDoneView(
+    PasswordResetDoneView
+):
+
+    template_name = 'password_reset_done.html'
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(
+            **kwargs
+        )
+
+        last_reset = self.request.session.get(
+            'last_password_reset'
+        )
+
+        remaining = 0
+
+        if last_reset:
+
+            last_reset_time = timezone.datetime.fromisoformat(
+                last_reset
+            )
+
+            remaining = max(
+                0,
+                60 - int(
+                    (
+                        timezone.now()
+                        - last_reset_time
+                    ).total_seconds()
+                )
+            )
+
+        context[
+            'remaining_seconds'
+        ] = remaining
+
+        return context
+
+
 
 
 @login_required

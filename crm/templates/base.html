@@ -48,13 +48,34 @@
                 Tasks
             </a>
 
-            <a href="{% url 'logout' %}">
+            <a
+                class="btn btn-light me-2"
+                href="{% url 'my_profile' %}"
+            >
+                My Profile
+            </a>
+
+            <<a href="{% url 'logout' %}">
                 Logout
             </a>
 
-            |
+           <div class="ms-auto text-white">
 
-            Welcome {{ user.username }}
+                Logged in as
+
+                <strong>
+                    {{ user.username }}
+                </strong>
+
+                (
+                {% if user.is_superuser %}
+                    Admin
+                {% else %}
+                    {{ user.employee.get_role_display }}
+                {% endif %}
+                )
+
+            </div>
 
         {% else %}
 
@@ -73,7 +94,7 @@
         {% for message in messages %}
 
             <div
-                class="alert alert-success"
+                class="alert alert-{{ message.tags }}"
             >
                 {{ message }}
             </div>
