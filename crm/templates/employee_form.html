@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% block content %}
 
 <h1 class="mb-4">
@@ -31,16 +32,13 @@
             <div class="mb-3">
 
                 <label>
-
                     {{ field.label }}
 
                     {% if field.field.required %}
-
                         <span class="text-danger">*</span>
-
                     {% endif %}
-
                 </label>
+
 
                 {% if field.name == 'phone' %}
 
@@ -143,12 +141,38 @@
 
                         </div>
 
+                        <div
+                            id="phone-validation"
+                            class="mt-2"
+                        ></div>
+
                     </div>
 
                 {% else %}
 
                     {{ field }}
 
+                {% endif %}
+
+
+                {% if field.name == 'username' %}
+                    <div
+                        id="username-validation"
+                        class="mt-2"
+                    ></div>
+                {% endif %}
+
+                {% if field.name == 'email' %}
+                    <div
+                        id="email-validation"
+                        class="mt-2"
+                    ></div>
+                {% endif %}
+
+                {% if field.help_text %}
+                    <small class="form-text text-muted">
+                        {{ field.help_text }}
+                    </small>
                 {% endif %}
 
                 {% if field.errors %}
@@ -166,6 +190,7 @@
             {% endfor %}
 
             <button
+                id="save-btn"
                 type="submit"
                 class="btn btn-primary"
             >
@@ -175,5 +200,46 @@
         </form>
     <div>
 </div>
+
+
+<script src="{% static 'js/ajax_validation.js' %}"></script>
+
+<script>
+if(document.getElementById('id_username')){
+
+    validateField(
+        'id_username',
+        'username',
+        'username-validation',
+        'Username already exists',
+        'Username available'
+    );
+
+}
+
+if(document.getElementById('id_email')){
+
+    validateField(
+        'id_email',
+        'email',
+        'email-validation',
+        'Email already registered',
+        'Email available'
+    );
+
+}
+
+if(document.getElementById('id_phone')){
+
+    validateField(
+        'id_phone',
+        'phone',
+        'phone-validation',
+        'Phone number already exists',
+        'Phone number available'
+    );
+
+}
+</script>
 
 {% endblock %}

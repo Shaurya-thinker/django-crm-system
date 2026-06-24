@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% block content %}
 
 <h1 class="mb-4">
@@ -135,10 +136,29 @@
 
                     </div>
 
+                    <div
+                        id="phone-validation"
+                        class="mt-2"
+                    ></div>
+
                 {% else %}
 
                     {{ field }}
 
+                {% endif %}
+
+                {% if field.name == 'name' %}
+                    <div
+                        id="company-name-validation"
+                        class="mt-2"
+                    ></div>
+                {% endif %}
+
+                {% if field.name == 'email' %}
+                    <div
+                        id="company-email-validation"
+                        class="mt-2"
+                    ></div>
                 {% endif %}
 
                 {% if field.errors %}
@@ -156,6 +176,7 @@
             {% endfor %}
 
             <button
+                id="save-btn"
                 type="submit"
                 class="btn btn-primary"
             >
@@ -164,6 +185,47 @@
 
         </form>
     </div>
-</div>        
+</div>
+
+<script src="{% static 'js/ajax_validation.js' %}"></script>
+
+<script>
+if(document.getElementById('id_name')){
+
+    validateField(
+        'id_name',
+        'company_name',
+        'company-name-validation',
+        'Company already exists',
+        'Company name available'
+    );
+
+}
+
+if(document.getElementById('id_email')){
+
+    validateField(
+        'id_email',
+        'company_email',
+        'company-email-validation',
+        'Email already used',
+        'Email available'
+    );
+
+}
+
+if(document.getElementById('id_phone')){
+
+    validateField(
+        'id_phone',
+        'phone',
+        'phone-validation',
+        'Phone number already exists',
+        'Phone number available'
+    );
+
+}
+</script>
+   
 
 {% endblock %}

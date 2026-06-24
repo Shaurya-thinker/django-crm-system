@@ -26,6 +26,7 @@ from .views import (
     CustomPasswordResetView,
     CustomPasswordResetDoneView,
     my_profile,
+    ajax_validate,
 )
 
 urlpatterns = [
@@ -176,5 +177,10 @@ urlpatterns = [
             template_name='password_reset_complete.html'
         ),
         name='password_reset_complete'
+    ),
+    path(
+        'ajax/validate/',
+        ajax_validate,
+        name='ajax_validate'
     ),
 ]

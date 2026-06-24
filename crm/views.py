@@ -11,7 +11,8 @@ from datetime import timedelta
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
 from django.contrib import messages
 from django.db import transaction
-from .utils import * 
+from .utils import *
+from django.http import JsonResponse
 from django.contrib.auth.models import (
     User,
     Group
@@ -53,6 +54,65 @@ def custom_404(request, exception):
         request,
         '404.html',
         status=404
+    )
+
+def ajax_validate(request):
+
+    validation_type = request.GET.get(
+        'type'
+    )
+
+    value = request.GET.get(
+        'value',
+        ''
+    )
+
+    exists = False
+
+    if validation_type == 'username':
+
+        exists = User.objects.filter(
+            username=value
+        ).exists()
+
+    elif validation_type == 'email':
+
+        exists = User.objects.filter(
+            email=value
+        ).exists()
+
+    elif validation_type == 'company_name':
+
+        exists = Company.objects.filter(
+            name__iexact=value
+        ).exists()
+
+    elif validation_type == 'company_email':
+        exists = (
+            Company.objects.filter(
+                email__iexact=value
+            ).exists()
+            or
+            User.objects.filter(
+                email__iexact=value
+            ).exists()
+        )
+        
+    elif validation_type == 'phone':
+        exists = (
+            Company.objects.filter(
+                phone__icontains=value
+            ).exists()
+            or
+            Employee.objects.filter(
+                phone__icontains=value
+            ).exists()
+        )
+        
+    return JsonResponse(
+        {
+            'exists': exists
+        }
     )
 
 
