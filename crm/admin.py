@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import Company, Employee, Task
+from .models import Company, Employee, Task, Role, Permission, RolePermission
 
+
+
+admin.site.register(Role)
+admin.site.register(Permission)
+admin.site.register(RolePermission)
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
@@ -30,14 +35,14 @@ class EmployeeAdmin(admin.ModelAdmin):
         'user',
         'role',
         'reporting_manager',
-        'designation',
+        'access_role',
         'phone'
     )
 
     search_fields = (
         'user__username',
         'user__email',
-        'designation'
+        'access_role'
     )
 
     list_filter = (

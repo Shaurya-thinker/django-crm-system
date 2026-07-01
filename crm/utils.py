@@ -19,12 +19,26 @@ def is_representative(user):
         hasattr(user, 'employee')
         and user.employee.role == 'representative'
     )
+    
+    
+    
+from .models import RolePermission
 
 
-def manager_or_admin(user):
+def has_permission(user, permission_code):
 
-    return (
-        is_admin(user)
-        or
-        is_manager(user)
-    )
+    if is_admin(user):
+        return True
+
+    if not hasattr(user, "employee"):
+        return False
+
+    role = user.employee.access_role
+
+    if role is None:
+        return False
+
+    return RolePermission.objects.filter(
+        role=role,
+        permission__code=permission_code
+    ).exists()

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, Employee, Task
+from .models import Company, Employee, Task, Role
 from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.models import User
 from .utils import * 
@@ -28,13 +28,30 @@ class CompanyForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
 
+        self.user = kwargs.pop(
+            'user',
+            None
+        )
+
         super().__init__(*args, **kwargs)
         
+        manager_queryset = Employee.objects.filter(
+            access_role__name='Manager'
+        )
+
+        if (
+            self.user
+            and
+            hasattr(self.user, 'employee')
+        ):
+
+            manager_queryset = manager_queryset.filter(
+                pk=self.user.employee.pk
+            )
+
         self.fields[
             'manager'
-        ].queryset = Employee.objects.filter(
-            role='manager'
-        )
+        ].queryset = manager_queryset
 
         for field in self.fields.values():
 
@@ -88,8 +105,8 @@ class EmployeeForm(forms.ModelForm):
 
         fields = [
             'role',
+            "access_role",
             'reporting_manager',
-            'designation',
             'phone',
             'profile_image'
         ]
@@ -214,8 +231,8 @@ class EmployeeUpdateForm(forms.ModelForm):
 
         fields = [
             'role',
+            "access_role",
             'reporting_manager',
-            'designation',
             'phone',
             'profile_image'
         ]
@@ -317,7 +334,6 @@ class ManagerEmployeeUpdateForm(forms.ModelForm):
         model = Employee
 
         fields = [
-            'designation',
             'phone',
             'profile_image'
         ]
@@ -479,3 +495,32 @@ class TaskForm(forms.ModelForm):
 class CompanyImportForm(forms.Form):
     
     csv_file = forms.FileField()
+    
+    
+    
+
+class AccessRoleForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Role
+
+        fields = [
+            "name",
+            "description",
+            "is_active",
+        ]
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+
+            field.widget.attrs.update(
+                {
+                    "class": "form-control"
+                }
+            )
+
+        self.fields["is_active"].widget.attrs["class"] = "form-check-input"

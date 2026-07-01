@@ -27,6 +27,10 @@ from .views import (
     CustomPasswordResetDoneView,
     my_profile,
     ajax_validate,
+    access_role_list,
+    create_access_role,
+    update_access_role,
+    manage_role_permissions,
 )
 
 urlpatterns = [
@@ -182,5 +186,25 @@ urlpatterns = [
         'ajax/validate/',
         ajax_validate,
         name='ajax_validate'
+    ),
+    path(
+        "access-roles/",
+        access_role_list,
+        name="access_role_list",
+    ),
+    path(
+    "access-roles/create/",
+    create_access_role,
+    name="create_access_role",
+    ),
+
+    path(
+        "access-roles/<int:id>/update/",
+        update_access_role,
+        name="update_access_role",
+    ),path(
+    "access-roles/<int:id>/permissions/",
+        manage_role_permissions,
+        name="manage_role_permissions",
     ),
 ]

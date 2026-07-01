@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    {{ heading }}
+</h1>
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {% for field in form %}
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        {{ field.label }}
+
+                        {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                        {% endif %}
+
+                    </label>
+
+                    {% if field.name == "is_active" %}
+
+                        <div class="form-check">
+
+                            {{ field }}
+
+                            <label
+                                class="form-check-label"
+                                for="{{ field.id_for_label }}"
+                            >
+                                Active
+                            </label>
+
+                        </div>
+
+                    {% else %}
+
+                        {{ field }}
+
+                    {% endif %}
+
+                    {% if field.help_text %}
+
+                        <div class="form-text">
+                            {{ field.help_text }}
+                        </div>
+
+                    {% endif %}
+
+                    {% if field.errors %}
+
+                        <div class="text-danger">
+
+                            {{ field.errors }}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Save Access Role
+            </button>
+
+            <a
+                href="{% url 'access_role_list' %}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

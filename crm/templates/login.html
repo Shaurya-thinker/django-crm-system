@@ -2,15 +2,31 @@
 
 {% block content %}
 
-<div class="row justify-content-center mt-5">
+<div
+    class="row justify-content-center align-items-center"
+    style="min-height:85vh;"
+>
 
-<div class="col-md-5">
+<div class="col-lg-5 col-md-7">
 
-    <div class="card shadow border-0">
+    <div class="card border-0 shadow-lg rounded-4">
 
-        <div class="card-body p-4">
+        <div class="card-body p-5">
 
             <div class="text-center mb-4">
+
+                <div
+                    class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow mb-3"
+                    style="
+                        width:70px;
+                        height:70px;
+                        font-size:28px;
+                    "
+                >
+
+                    <i class="bi bi-person-workspace"></i>
+
+                </div>
 
                 <h2 class="fw-bold">
                     Welcome Back
@@ -32,13 +48,23 @@
                         Username
                     </label>
 
-                    <input
-                        type="text"
-                        name="username"
-                        class="form-control"
-                        placeholder="Enter username"
-                        required
-                    >
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+
+                            <i class="bi bi-person"></i>
+
+                        </span>
+
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-control rounded-end"
+                            placeholder="Enter username"
+                            required
+                        >
+
+                    </div>
 
                 </div>
 
@@ -50,11 +76,17 @@
 
                     <div class="input-group">
 
+                        <span class="input-group-text">
+
+                            <i class="bi bi-lock"></i>
+
+                        </span>
+
                         <input
                             type="password"
                             name="password"
                             id="password"
-                            class="form-control"
+                            class="form-control rounded-end"
                             placeholder="Enter password"
                             required
                         >
@@ -64,7 +96,7 @@
                             class="btn btn-outline-secondary"
                             onclick="togglePassword()"
                         >
-                            👁
+                            <i class="bi bi-eye"></i>
                         </button>
 
                     </div>
@@ -98,10 +130,18 @@
 
                 <button
                     type="submit"
-                    class="btn btn-primary w-100"
+                    class="btn btn-primary btn-lg w-100"
                 >
                     Login
                 </button>
+
+                <hr>
+
+                <p class="text-center text-muted mb-0">
+
+                    CRM Management System
+
+                </p>
 
             </form>
 
@@ -115,15 +155,33 @@
 
 <script>
 
-function togglePassword() {
+function togglePassword(){
 
     const passwordField =
         document.getElementById('password');
 
-    passwordField.type =
-        passwordField.type === 'password'
-        ? 'text'
-        : 'password';
+    const icon =
+        document.querySelector(
+            '.btn-outline-secondary i'
+        );
+
+    if(passwordField.type === 'password'){
+
+        passwordField.type = 'text';
+
+        icon.className =
+            'bi bi-eye-slash';
+
+    }
+    else{
+
+        passwordField.type = 'password';
+
+        icon.className =
+            'bi bi-eye';
+
+    }
+
 }
 
 </script>

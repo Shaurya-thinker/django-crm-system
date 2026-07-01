@@ -27,6 +27,8 @@ function validateField(
 
     let timer;
 
+    let controller;
+
     input.addEventListener(
         'input',
         function(){
@@ -55,35 +57,58 @@ function validateField(
                     message.innerHTML =
                         '<span class="text-secondary">Checking...</span>';
 
+                    if(controller){
+
+                        controller.abort();
+
+                    }
+
+                    controller =
+                        new AbortController();
+
+                    const id = currentId || '';
+
                     fetch(
-                        `/ajax/validate/?type=${validationType}&value=${encodeURIComponent(value)}`
+                        `/ajax/validate/?type=${validationType}&value=${encodeURIComponent(value)}&current_id=${currentId}`,
+                        {
+                            signal: controller.signal
+                        }
                     )
 
                     .then(
                         response => response.json()
                     )
 
-                    .then(
-                        data => {
+                    .then(data => {
 
-                            if(data.exists){
+                        if(data.exists){
 
-                                message.innerHTML =
-                                    `<span class="text-danger">❌ ${existsMessage}</span>`;
+                            message.innerHTML =
+                                `<span class="text-danger">❌ ${existsMessage}</span>`;
 
-                                saveBtn.disabled = true;
+                            saveBtn.disabled = true;
 
-                            }
-                            else{
+                        }
+                        else{
 
-                                message.innerHTML =
-                                    `<span class="text-success">✅ ${availableMessage}</span>`;
+                            message.innerHTML =
+                                `<span class="text-success">✅ ${availableMessage}</span>`;
 
-                                saveBtn.disabled = false;
+                            saveBtn.disabled = false;
 
-                            }
+                        }
 
-                        });
+                    })
+
+                    .catch(error => {
+
+                        if(error.name !== 'AbortError'){
+
+                            console.error(error);
+
+                        }
+
+                    });
 
                 },
                 500

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm, EmployeeUpdateForm, ManagerEmployeeUpdateForm
+from .forms import CompanyForm, EmployeeForm, TaskForm, CompanyImportForm, EmployeeUpdateForm, ManagerEmployeeUpdateForm, AccessRoleForm
 from django.http import HttpResponse, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -17,10 +17,14 @@ from django.contrib.auth.models import (
     User,
     Group
 )
+from django.db.models import Q
 from .models import (
     Company,
     Employee,
-    Task
+    Task,
+    Role,
+    Permission,
+    RolePermission
 )
 from django.contrib.auth import (
     authenticate,
@@ -55,9 +59,14 @@ def custom_404(request, exception):
         '404.html',
         status=404
     )
+    
 
 def ajax_validate(request):
 
+    current_id = request.GET.get(
+        'current_id'
+    )
+    
     validation_type = request.GET.get(
         'type'
     )
@@ -71,42 +80,102 @@ def ajax_validate(request):
 
     if validation_type == 'username':
 
-        exists = User.objects.filter(
-            username=value
-        ).exists()
+        queryset = User.objects.filter(
+            username__iexact=value
+        )
+
+        if current_id:
+
+            employee = Employee.objects.filter(
+                id=current_id
+            ).first()
+
+            if employee:
+
+                queryset = queryset.exclude(
+                    id=employee.user.pk
+                )
+
+        exists = queryset.exists()
 
     elif validation_type == 'email':
 
-        exists = User.objects.filter(
-            email=value
-        ).exists()
+        queryset = User.objects.filter(
+            email__iexact=value
+        )
+
+        if current_id:
+
+            employee = Employee.objects.filter(
+                id=current_id
+            ).first()
+
+            if employee:
+
+                queryset = queryset.exclude(
+                    id=employee.user.pk
+                )
+
+        exists = queryset.exists()
 
     elif validation_type == 'company_name':
 
-        exists = Company.objects.filter(
+        queryset = Company.objects.filter(
             name__iexact=value
-        ).exists()
+        )
+
+        if current_id:
+
+            queryset = queryset.exclude(
+                id=current_id
+            )
+
+        exists = queryset.exists()
 
     elif validation_type == 'company_email':
+        company_queryset = Company.objects.filter(
+            email__iexact=value
+        )
+
+        if current_id:
+
+            company_queryset = company_queryset.exclude(
+                id=current_id
+            )
+
+        user_queryset = User.objects.filter(
+            email__iexact=value
+        )
+
         exists = (
-            Company.objects.filter(
-                email__iexact=value
-            ).exists()
+            company_queryset.exists()
             or
-            User.objects.filter(
-                email__iexact=value
-            ).exists()
+            user_queryset.exists()
         )
         
     elif validation_type == 'phone':
+        company_queryset = Company.objects.filter(
+            phone=value
+        )
+
+        employee_queryset = Employee.objects.filter(
+            phone=value
+        )
+
+        if current_id:
+
+            company_queryset = company_queryset.exclude(
+                id=current_id
+            )
+
+            employee_queryset = employee_queryset.exclude(
+                id=current_id
+            )
+
         exists = (
-            Company.objects.filter(
-                phone__icontains=value
-            ).exists()
+            company_queryset.exists()
             or
-            Employee.objects.filter(
-                phone__icontains=value
-            ).exists()
+            employee_queryset.exists()
         )
         
     return JsonResponse(
@@ -192,10 +261,15 @@ def my_profile(request):
 
     if request.user.is_superuser:
 
-        return render(
-            request,
-            'admin_profile.html'
-        )
+        if request.user.is_superuser:
+
+            return render(
+                request,
+                "my_profile.html",
+                {
+                    "is_admin": True
+                }
+            )
 
     return render(
         request,
@@ -394,7 +468,10 @@ def dashboard(request):
 @login_required
 def create_company(request):
     
-    if not manager_or_admin(request.user):
+    if not has_permission(
+        request.user,
+        "company_create"
+    ):
 
         raise PermissionDenied
 
@@ -402,7 +479,8 @@ def create_company(request):
 
         form = CompanyForm(
             request.POST,
-            request.FILES
+            request.FILES,
+            user=request.user
         )
 
         if form.is_valid():
@@ -428,14 +506,17 @@ def create_company(request):
 
     else:
 
-        form = CompanyForm()
+        form = CompanyForm(
+            user=request.user
+        )
 
     return render(
         request,
         'company_form.html',
         {
             'form': form,
-            'heading': 'Create Company'
+            'heading': 'Create Company',
+            'current_id': '',
         }
     )
 
@@ -444,8 +525,10 @@ def create_company(request):
 @login_required
 def update_company(request, slug):
     
-    if not manager_or_admin(request.user):
-
+    if not has_permission(
+        request.user,
+        "company_update"
+    ):
         raise PermissionDenied
 
     company = get_object_or_404(
@@ -464,7 +547,8 @@ def update_company(request, slug):
         form = CompanyForm(
             request.POST,
             request.FILES,
-            instance=company
+            instance=company,
+            user=request.user
         )
 
         if form.is_valid():
@@ -479,7 +563,8 @@ def update_company(request, slug):
     else:
 
         form = CompanyForm(
-            instance=company
+            instance=company,
+            user=request.user
         )
 
     return render(
@@ -487,7 +572,8 @@ def update_company(request, slug):
         'company_form.html',
         {
             'form': form,
-            'heading': 'Update Company'
+            'heading': 'Update Company',
+            'current_id': company.pk,
         }
     )
     
@@ -496,8 +582,10 @@ def update_company(request, slug):
 @login_required
 def delete_company(request, slug):
 
-    if not manager_or_admin(request.user):
-
+    if not has_permission(
+        request.user,
+        "company_delete"
+    ):
         raise PermissionDenied
 
     company = get_object_or_404(
@@ -532,7 +620,10 @@ def delete_company(request, slug):
 @login_required
 def company_list(request):
     
-    if is_representative(request.user):
+    if not has_permission(
+        request.user,
+        "company_view"
+    ):
         raise PermissionDenied
    
     if is_manager(request.user):
@@ -553,12 +644,20 @@ def company_list(request):
     if search:
 
         companies = companies.filter(
-            name__icontains=search
+
+            Q(name__icontains=search)
+            |
+            Q(email__icontains=search)
+            |
+            Q(phone__icontains=search)
+            |
+            Q(address__icontains=search)
+
         )
 
     paginator = Paginator(
         companies,
-        5
+        10
     )
 
     page_number = request.GET.get(
@@ -582,7 +681,10 @@ def company_list(request):
 @login_required
 def company_detail(request, slug):
     
-    if is_representative(request.user):
+    if not has_permission(
+        request.user,
+        "company_view"
+    ):
         raise PermissionDenied
 
     company = get_object_or_404(
@@ -609,8 +711,10 @@ def company_detail(request, slug):
 @login_required
 def create_employee(request):
     
-    if not is_admin(request.user):
-
+    if not has_permission(
+        request.user,
+        "employee_create"
+    ):
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -683,7 +787,8 @@ def create_employee(request):
         'employee_form.html',
         {
             'form': form,
-            'heading': 'Create Employee'
+            'heading': 'Create Employee',
+            'current_id': '',
         }
     )
 
@@ -692,7 +797,10 @@ def create_employee(request):
 @login_required
 def employee_list(request):
 
-    if is_representative(request.user):
+    if not has_permission(
+        request.user,
+        "employee_view"
+    ):
         raise PermissionDenied
 
     employees = Employee.objects.select_related(
@@ -713,16 +821,54 @@ def employee_list(request):
         'search',
         ''
     )
+    
+    role = request.GET.get(
+        'role',
+        ''
+    )
+
+    access_role = request.GET.get(
+        'access_role',
+        ''
+    )
 
     if search:
 
         employees = employees.filter(
-            user__username__icontains=search
+
+            Q(user__username__icontains=search)
+            |
+            Q(user__email__icontains=search)
+            |
+            Q(phone__icontains=search)
+            |
+            Q(access_role__name__icontains=search)
+            |
+            Q(reporting_manager__user__username__icontains=search)
+
         )
+        
+    if role:
+
+        employees = employees.filter(
+            role=role
+        )
+
+    if access_role:
+
+        employees = employees.filter(
+            access_role_id=access_role
+        )
+        
+    access_roles = Role.objects.filter(
+        is_active=True
+    ).order_by(
+        'name'
+    )
     
     paginator = Paginator(
         employees,
-        5
+        10
     )
 
     page_number = request.GET.get(
@@ -738,7 +884,10 @@ def employee_list(request):
         'employee_list.html',
         {
             'page_obj': page_obj,
-            'search': search
+            'search': search,
+            'role': role,
+            'access_role': access_role,
+            'access_roles': access_roles,
         }
     )
     
@@ -746,8 +895,10 @@ def employee_list(request):
 @login_required
 def employee_detail(request, id):
 
-    if is_representative(request.user):
-
+    if not has_permission(
+        request.user,
+        "employee_view"
+    ):
         raise PermissionDenied
 
     employee = get_object_or_404(
@@ -785,8 +936,10 @@ def update_employee(request, id):
         id=id
     )
 
-    if is_representative(request.user):
-
+    if not has_permission(
+        request.user,
+        "employee_update"
+    ):
         raise PermissionDenied
     
     if is_manager(request.user):
@@ -846,7 +999,8 @@ def update_employee(request, id):
         'employee_form.html',
         {
             'form': form,
-            'heading': 'Update Employee'
+            'heading': 'Update Employee',
+            'current_id': employee.pk,
         }
     )
     
@@ -859,8 +1013,10 @@ def delete_employee(request, id):
         id=id
     )
 
-    if not is_admin(request.user):
-
+    if not has_permission(
+        request.user,
+        "employee_delete"
+    ):
         raise PermissionDenied
         
         
@@ -886,8 +1042,10 @@ def delete_employee(request, id):
 @login_required
 def create_task(request):
     
-    if not manager_or_admin(request.user):
-
+    if not has_permission(
+        request.user,
+        "task_create"
+    ):
         raise PermissionDenied
 
     if request.method == 'POST':
@@ -927,6 +1085,12 @@ def create_task(request):
 
 @login_required
 def task_list(request):
+    
+    if not has_permission(
+        request.user,
+        "task_view"
+    ):
+        raise PermissionDenied
 
     tasks = Task.objects.select_related(
         'company',
@@ -947,7 +1111,6 @@ def task_list(request):
         tasks = tasks.filter(
             employee__reporting_manager=manager
         )
-    
 
     search = request.GET.get(
         'search',
@@ -955,17 +1118,25 @@ def task_list(request):
     )
 
     status = request.GET.get(
-        'status'
+        'status',
+        ''
     )
 
     priority = request.GET.get(
-        'priority'
+        'priority',
+        ''
     )
 
     if search:
 
         tasks = tasks.filter(
-            title__icontains=search
+            Q(title__icontains=search)
+            |
+            Q(description__icontains=search)
+            |
+            Q(company__name__icontains=search)
+            |
+            Q(employee__user__username__icontains=search)
         )
 
     if status:
@@ -980,12 +1151,24 @@ def task_list(request):
             priority=priority
         )
         
-        
+    paginator = Paginator(
+        tasks,
+        10
+    )
+
+    page_number = request.GET.get(
+        'page'
+    )
+
+    page_obj = paginator.get_page(
+        page_number
+    )
+
     return render(
         request,
         'task_list.html',
         {
-            'tasks': tasks,
+            'page_obj': page_obj,
             'search': search,
             'status': status,
             'priority': priority,
@@ -1001,6 +1184,12 @@ def task_detail(request, id):
         Task,
         id=id
     )
+    
+    if not has_permission(
+        request.user,
+        "task_view"
+    ):
+        raise PermissionDenied
 
     if is_representative(request.user):
 
@@ -1030,8 +1219,10 @@ def update_task(request, id):
         id=id
     )
     
-    if is_representative(request.user):
-
+    if not has_permission(
+        request.user,
+        "task_update"
+    ):
         raise PermissionDenied
 
     if is_manager(request.user):
@@ -1040,10 +1231,6 @@ def update_task(request, id):
 
             raise PermissionDenied
 
-
-    if not manager_or_admin(request.user):
-
-        raise PermissionDenied
         
     if request.method == 'POST':
 
@@ -1088,8 +1275,10 @@ def delete_task(request, id):
         id=id
     )
     
-    if is_representative(request.user):
-
+    if not has_permission(
+        request.user,
+        "task_delete"
+    ):
         raise PermissionDenied
 
     if is_manager(request.user):
@@ -1098,10 +1287,6 @@ def delete_task(request, id):
 
             raise PermissionDenied
     
-
-    if not manager_or_admin(request.user):
-
-        raise PermissionDenied
 
     if request.method == 'POST':
 
@@ -1124,6 +1309,12 @@ def delete_task(request, id):
 @login_required
 def export_companies_csv(request):
 
+    if not has_permission(
+        request.user,
+        "company_import"
+    ):
+        raise PermissionDenied
+
     response = HttpResponse(
         content_type='text/csv'
     )
@@ -1134,27 +1325,23 @@ def export_companies_csv(request):
 
     writer = csv.writer(response)
 
-    writer.writerow(
-        [
-            'Name',
-            'Email',
-            'Phone',
-            'Address'
-        ]
-    )
+    writer.writerow([
+        'Name',
+        'Email',
+        'Phone',
+        'Address'
+    ])
 
     companies = Company.objects.all()
 
     for company in companies:
 
-        writer.writerow(
-            [
-                company.name,
-                company.email,
-                company.phone,
-                company.address
-            ]
-        )
+        writer.writerow([
+            company.name,
+            company.email,
+            company.phone,
+            company.address
+        ])
 
     return response
 
@@ -1162,10 +1349,9 @@ def export_companies_csv(request):
 @login_required
 def import_companies_csv(request):
 
-    if not (
-        is_admin(request.user)
-        or
-        is_manager(request.user)
+    if not has_permission(
+        request.user,
+        "company_import"
     ):
         raise PermissionDenied
 
@@ -1305,3 +1491,168 @@ def download_company_template(request):
     )
 
     return response
+
+
+
+
+@login_required
+def access_role_list(request):
+
+    if not is_admin(request.user):
+        raise PermissionDenied
+
+    roles = Role.objects.order_by(
+        "name"
+    )
+
+    return render(
+        request,
+        "access_role_list.html",
+        {
+            "roles": roles
+        }
+    )
+    
+
+
+@login_required
+def create_access_role(request):
+
+    if not is_admin(request.user):
+
+        raise PermissionDenied
+
+    if request.method == "POST":
+
+        form = AccessRoleForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect("access_role_list")
+
+    else:
+
+        form = AccessRoleForm()
+
+    return render(
+        request,
+        "access_role_form.html",
+        {
+            "form": form,
+            "heading": "Create Access Role",
+            "current_id": "",
+        },
+    )
+    
+
+@login_required
+def update_access_role(request, id):
+
+    if not is_admin(request.user):
+
+        raise PermissionDenied
+
+    role = get_object_or_404(
+        Role,
+        id=id,
+    )
+
+    if request.method == "POST":
+
+        form = AccessRoleForm(
+            request.POST,
+            instance=role,
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect("access_role_list")
+
+    else:
+
+        form = AccessRoleForm(
+            instance=role,
+        )
+
+    return render(
+        request,
+        "access_role_form.html",
+        {
+            "form": form,
+            "heading": "Update Access Role",
+            "current_id": role.pk,
+        },
+    )
+    
+
+@login_required
+def manage_role_permissions(request, id):
+
+    if not is_admin(request.user):
+
+        raise PermissionDenied
+
+    role = get_object_or_404(
+        Role,
+        id=id
+    )
+
+    permissions = Permission.objects.all().order_by(
+        "module",
+        "name"
+    )
+
+    assigned_permissions = RolePermission.objects.filter(
+        role=role
+    ).values_list(
+        "permission_id",
+        flat=True
+    )
+    
+    if request.method == "POST":
+
+        selected_permissions = request.POST.getlist(
+            "permissions"
+        )
+
+        RolePermission.objects.filter(
+            role=role
+        ).delete()
+
+        role_permissions = [
+
+            RolePermission(
+                role=role,
+                permission_id=permission_id
+            )
+
+            for permission_id in selected_permissions
+        ]
+
+        RolePermission.objects.bulk_create(
+            role_permissions
+        )
+
+        messages.success(
+            request,
+            "Permissions updated successfully."
+        )
+
+        return redirect(
+            "manage_role_permissions",
+            id=role.pk
+        )
+
+    return render(
+        request,
+        "manage_role_permissions.html",
+        {
+            "role": role,
+            "permissions": permissions,
+            "assigned_permissions": assigned_permissions,
+        }
+    )

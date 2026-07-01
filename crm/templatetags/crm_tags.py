@@ -45,3 +45,15 @@ def is_admin(user):
         user,
         'employee'
     )
+    
+    
+from crm.utils import has_permission as check_permission
+
+
+@register.filter
+def has_permission(user, permission_code):
+
+    return check_permission(
+        user,
+        permission_code
+    )

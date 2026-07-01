@@ -82,6 +82,14 @@ class Employee(models.Model):
         max_length=20,
         choices=ROLE_CHOICES
     )
+    
+    access_role = models.ForeignKey(
+        'Role',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="employees"
+    )
 
     reporting_manager = models.ForeignKey(
         'self',
@@ -89,10 +97,6 @@ class Employee(models.Model):
         null=True,
         blank=True,
         related_name='representatives'
-    )
-
-    designation = models.CharField(
-        max_length=100
     )
 
     phone = models.CharField(
@@ -109,6 +113,76 @@ class Employee(models.Model):
 
         return self.user.username
     
+
+
+class Role(models.Model):
+
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    def __str__(self):
+
+        return self.name
+    
+    
+
+class Permission(models.Model):
+
+    code = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    name = models.CharField(
+        max_length=150
+    )
+
+    module = models.CharField(
+        max_length=100
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    def __str__(self):
+
+        return self.name
+    
+    
+
+class RolePermission(models.Model):
+
+    role = models.ForeignKey(
+        Role,
+        on_delete=models.CASCADE
+    )
+
+    permission = models.ForeignKey(
+        Permission,
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+
+        unique_together = (
+            'role',
+            'permission'
+        )
+
+    def __str__(self):
+
+        return f"{self.role} - {self.permission}"
 
 
 

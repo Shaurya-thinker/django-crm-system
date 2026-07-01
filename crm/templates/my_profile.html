@@ -2,13 +2,142 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
+{% if is_admin %}
+    <div
+        class="row justify-content-center align-items-center"
+        style="min-height:85vh;"
+    >
 
-    <div class="col-md-8">
+    <div class="col-lg-9 col-xl-8">
 
-        <div class="card shadow">
+        <div class="card shadow-lg border-0">
+
+            <div class="card-body">
+
+                <h2 class="fw-bold mb-0">
+                    My Profile
+                </h2>
+                <div class="text-center">
+                    <div
+                        class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center shadow-lg border border-3 border-light mb-3"
+                        style="
+                            width:120px;
+                            height:120px;
+                            font-size:48px;
+                        "
+                    >
+                        {{ user.username|first|upper }}
+                    </div>
+
+                    <h2 class="mt-4 fw-bold">
+                        {{ user.get_full_name|default:user.username }}
+                    </h2>
+
+                    <span class="badge bg-danger px-3 py-2 fs-6">
+                        Administrator
+                    </span>
+
+                    <hr>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-4 h-100">
+
+                                <small class="text-muted">
+                                    Email
+                                </small>
+
+                                <div class="fw-semibold">
+                                    {{ user.email|default:"Not Set" }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-4 h-100">
+
+                                <small class="text-muted">
+                                    Permissions
+                                </small>
+
+                                <div class="fw-semibold">
+                                    Full System Access
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3 mt-1">
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-4 h-100">
+
+                                <small class="text-muted">
+                                    Role
+                                </small>
+
+                                <div class="fw-semibold">
+                                    Administrator
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-4 h-100">
+
+                                <small class="text-muted">
+                                    Status
+                                </small>
+
+                                <div class="fw-semibold text-success">
+                                    Active
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<!-- Existing employee profile starts here -->
+
+<div
+    class="row justify-content-center align-items-center"
+    style="min-height:85vh;"
+>
+
+    <div class="col-lg-9 col-xl-8">
+
+        <div class="card shadow-lg border-0">
 
             <div class="card-body p-4">
+
+                <h3 class="mb-4">
+                    My Profile
+                </h3>
 
                 <div class="text-center">
 
@@ -16,7 +145,7 @@
 
                         <img
                             src="{{ employee.profile_image.url }}"
-                            class="rounded-circle shadow"
+                            class="rounded-circle shadow-lg border border-3 border-white"
                             width="120"
                             height="120"
                             style="object-fit: cover;"
@@ -37,11 +166,11 @@
 
                     {% endif %}
 
-                    <h2 class="mt-3">
+                    <h2 class="mt-4 fw-bold">
                         {{ employee.user.username }}
                     </h2>
 
-                    <span class="badge bg-success">
+                    <span class="badge bg-success px-3 py-2 fs-6">
                         {{ employee.get_role_display }}
                     </span>
 
@@ -49,49 +178,69 @@
 
                 <hr>
 
-                <div class="row">
+                <div class="row g-3">
 
                     <div class="col-md-6">
 
-                        <p>
-                            <strong>Email:</strong>
-                            <br>
-                            {{ employee.user.email }}
-                        </p>
+                        <div class="border rounded p-3 h-100">
+
+                            <small class="text-muted">
+                                Email
+                            </small>
+
+                            <div class="fw-semibold">
+                                {{ employee.user.email }}
+                            </div>
+
+                        </div>
 
                     </div>
 
                     <div class="col-md-6">
 
-                        <p>
-                            <strong>Phone:</strong>
-                            <br>
-                            {{ employee.phone }}
-                        </p>
+                        <div class="border rounded p-3 h-100">
 
-                    </div>
+                            <small class="text-muted">
+                                Phone
+                            </small>
 
-                </div>
+                            <div class="fw-semibold">
+                                {{ employee.phone }}
+                            </div>
 
-                <div class="row">
-
-                    <div class="col-md-6">
-
-                        <p>
-                            <strong>Designation:</strong>
-                            <br>
-                            {{ employee.designation }}
-                        </p>
+                        </div>
 
                     </div>
 
                     <div class="col-md-6">
 
-                        <p>
-                            <strong>Role:</strong>
-                            <br>
-                            {{ employee.get_role_display }}
-                        </p>
+                        <div class="border rounded p-3 h-100">
+
+                            <small class="text-muted">
+                                Access Role
+                            </small>
+
+                            <div class="fw-semibold">
+                                {{ employee.access_role.name }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="border rounded p-3 h-100">
+
+                            <small class="text-muted">
+                                Role
+                            </small>
+
+                            <div class="fw-semibold">
+                                {{ employee.get_role_display }}
+                            </div>
+
+                        </div>
 
                     </div>
 
@@ -99,10 +248,19 @@
 
                 {% if employee.reporting_manager %}
 
-                <div class="alert alert-info">
+                <div class="card border-info mt-4">
 
-                    <strong>Reporting Manager:</strong>
-                    {{ employee.reporting_manager.user.username }}
+                    <div class="card-body">
+
+                        <h6 class="text-info mb-2">
+
+                            Reporting Manager
+
+                        </h6>
+
+                        {{ employee.reporting_manager.user.username }}
+
+                    </div>
 
                 </div>
 
@@ -118,12 +276,14 @@
 
                     {% for rep in employee.representatives.all %}
 
-                    <li class="list-group-item">
+                   <li class="list-group-item d-flex justify-content-between align-items-center">
 
                         {{ rep.user.username }}
 
-                        <span class="text-muted">
-                            ({{ rep.designation }})
+                        <span class="badge bg-secondary">
+
+                            {{ rep.access_role.name }}
+
                         </span>
 
                     </li>
@@ -147,5 +307,7 @@
     </div>
 
 </div>
+
+{% endif %}
 
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load crm_tags %}
 {% load static %}
 {% block content %}
 
@@ -152,6 +152,22 @@
 
                     {{ field }}
 
+                    {% if field.name == 'access_role' and request.user|is_admin %}
+
+                        <div class="mt-2">
+
+                            <a
+                                href="{% url 'create_access_role' %}"
+                                target="_blank"
+                                class="small text-decoration-none"
+                            >
+                                + Create New Access Role
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+                    
                 {% endif %}
 
 
@@ -201,8 +217,12 @@
     <div>
 </div>
 
+<script>
+const currentId = "{{ current_id|default:'' }}";
+</script>
 
 <script src="{% static 'js/ajax_validation.js' %}"></script>
+
 
 <script>
 if(document.getElementById('id_username')){

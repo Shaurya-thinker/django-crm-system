@@ -81,9 +81,9 @@
                         <div class="col-md-6">
 
                             <p>
-                                <strong>Designation:</strong>
+                                <strong>Access Role:</strong>
                                 <br>
-                                {{ employee.designation }}
+                                {{ employee.access_role.name }}
                             </p>
 
                         </div>
@@ -144,40 +144,37 @@
 
                         {% endfor %}
 
-                    </ul>
+                    </ul>   
 
                     {% endif %}
 
-                    <div class="mt-4 d-flex gap-2">
+                    {% if request.user|has_permission:"employee_update" or request.user|has_permission:"employee_delete" %}
+                        <div class="mt-4 d-flex gap-2">
 
-                        {% if request.user|is_admin %}
+                            {% if request.user|has_permission:"employee_update" %}
 
-                            <a
-                                href="{% url 'update_employee' employee.id %}"
-                                class="btn btn-warning"
-                            >
-                                Edit Employee
-                            </a>
+                                    <a
+                                        href="{% url 'update_employee' employee.id %}"
+                                        class="btn btn-warning"
+                                    >
+                                        Edit Employee
+                                    </a>
 
-                            <a
-                                href="{% url 'delete_employee' employee.id %}"
-                                class="btn btn-danger"
-                            >
-                                Delete Employee
-                            </a>
+                            {% endif %}
 
-                        {% elif request.user|is_manager %}
+                            {% if request.user|has_permission:"employee_delete" %}
 
-                            <a
-                                href="{% url 'update_employee' employee.id %}"
-                                class="btn btn-warning"
-                            >
-                                Edit Employee
-                            </a>
+                                 <a
+                                    href="{% url 'delete_employee' employee.id %}"
+                                    class="btn btn-danger"
+                                >
+                                    Delete Employee
+                                </a>
 
-                        {% endif %}
+                            {% endif %}
 
-                    </div>
+                        </div>
+                    {% endif %}
 
                 </div>
 

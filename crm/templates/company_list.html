@@ -3,176 +3,270 @@
 {% block content %}
 {% load crm_tags %}
 
-<h1>Companies</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<div class="mb-3">
+    <h2 class="fw-bold mb-0">
+        Companies
+    </h2>
 
-    <a
-        href="{% url 'create_company' %}"
-        class="btn btn-primary"
-    >
-        Create Company
-    </a>
+    <div class="btn-group">
 
-    <a
-        href="{% url 'export_companies_csv' %}"
-        class="btn btn-success"
-    >
-        Export CSV
-    </a>
+        {% if request.user|has_permission:"company_create" %}
+        <a href="{% url 'create_company' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
+            Create
+        </a>
+        {% endif %}
 
-    {% if request.user|has_group:'Admin' %}
+        {% if request.user|has_permission:"company_import" %}
+        <a href="{% url 'export_companies_csv' %}" class="btn btn-success">
+            <i class="bi bi-download me-1"></i>
+            Export
+        </a>
+        {% endif %}
+
+        {% if request.user|has_permission:"company_import" %}
 
         <a
             href="{% url 'import_companies_csv' %}"
             class="btn btn-warning"
         >
-            Import CSV
+            <i class="bi bi-upload me-1"></i>
+            Import
         </a>
 
-    {% endif %}
+        {% endif %}
+
+    </div>
 
 </div>
 
+
 <form method="GET">
 
-    <input
-        type="text"
-        name="search"
-        value="{{ search }}"
-        placeholder="Search company"
-    >
+    <div class="card border-0 shadow-sm mb-4">
 
-    <button
-        type="submit"
-        class="btn btn-primary"
-    >
-        Search
-    </button>
+        <div class="card-body">
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="search"
+                        value="{{ search }}"
+                        placeholder="Search companies..."
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+        </div>
+
+    </div>
 
 </form>
 
-<br>
+<div class="card border-0 shadow-sm">
 
-<table class="table table-bordered">
+    <div class="table-responsive">
 
-    <thead>
+        <table class="table table-hover align-middle mb-0">
 
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Logo</th>
-        </tr>
+            <thead class="table-light">
 
-    </thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th class="text-center">
+                        Logo
+                    </th>
+                </tr>
 
-    <tbody>
+            </thead>
 
-        {% for company in page_obj %}
+            <tbody>
 
-            <tr>
+                {% for company in page_obj %}
 
-                <td>
+                    <tr>
 
-                    <a
-                        href="{% url 'company_detail' company.slug %}"
-                    >
-                        {{ company.name }}
-                    </a>
+                        <td>
 
-                </td>
+                            <a
+                                href="{% url 'company_detail' company.slug %}"
+                                class="text-decoration-none fw-semibold"
+                            >
+                                {{ company.name }}
+                            </a>
 
-                <td>
-                    {{ company.email }}
-                </td>
+                        </td>
 
-                <td>
-                    {{ company.phone }}
-                </td>
+                        <td>
+                            {{ company.email }}
+                        </td>
 
-                <td>
+                        <td>
+                            {{ company.phone }}
+                        </td>
 
-                    {% if company.logo %}
+                        <td class="text-center">
 
-                        <img
-                            src="{{ company.logo.url }}"
-                            width="80"
-                            height="80"
-                            style="object-fit: contain;"
-                        >
+                            {% if company.logo %}
 
-                    {% endif %}
+                                <img
+                                    src="{{ company.logo.url }}"
+                                    width="50"
+                                    height="50"
+                                    class="rounded border"
+                                    style="object-fit:cover;"
+                                >
+                            {% else %}
 
-                </td>
+                                <span class="text-muted">—</span>
 
-            </tr>
+                            {% endif %}
 
-        {% empty %}
+                        </td>
 
-            <tr>
+                    </tr>
 
-                <td colspan="4">
+                {% empty %}
 
-                    No Companies Found
+                    <tr>
 
-                </td>
+                        <td colspan="4" class="text-center py-5 text-muted">
 
-            </tr>
+                            <i class="bi bi-building display-5 text-secondary mb-2 d-block"></i>
 
-        {% endfor %}
+                            No companies found.
 
-    </tbody>
+                        </td>
 
-</table>
+                    </tr>
 
-<nav>
+                {% endfor %}
 
-    {% if page_obj.has_previous %}
+            </tbody>
 
-        <a
-            href="?page=1"
-            class="btn btn-secondary"
-        >
-            First
-        </a>
+        </table>
+    </div>
+</div>
 
-        <a
-            href="?page={{ page_obj.previous_page_number }}"
-            class="btn btn-secondary"
-        >
-            Previous
-        </a>
+<nav class="mt-4">
 
-    {% endif %}
+    <ul class="pagination justify-content-center">
 
-    <span class="mx-3">
+        {% if page_obj.has_previous %}
 
-        Page {{ page_obj.number }}
+            <li class="page-item">
 
-        of
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&page=1"
+                >
+                    First
+                </a>
 
-        {{ page_obj.paginator.num_pages }}
+            </li>
 
-    </span>
+            <li class="page-item">
 
-    {% if page_obj.has_next %}
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&page={{ page_obj.previous_page_number }}"
+                >
+                    &laquo;
+                </a>
 
-        <a
-            href="?page={{ page_obj.next_page_number }}"
-            class="btn btn-secondary"
-        >
-            Next
-        </a>
+            </li>
 
-        <a
-            href="?page={{ page_obj.paginator.num_pages }}"
-            class="btn btn-secondary"
-        >
-            Last
-        </a>
+        {% else %}
 
-    {% endif %}
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    First
+                </span>
+
+            </li>
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    &laquo;
+                </span>
+
+            </li>
+
+        {% endif %}
+
+        <li class="page-item active">
+
+            <span class="page-link">
+
+                {{ page_obj.number }}
+
+            </span>
+
+        </li>
+
+        {% if page_obj.has_next %}
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&page={{ page_obj.next_page_number }}"
+                >
+                    &raquo;
+                </a>
+
+            </li>
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&page={{ page_obj.paginator.num_pages }}"
+                >
+                    Last
+                </a>
+
+            </li>
+
+        {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    &raquo;
+                </span>
+
+            </li>
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    Last
+                </span>
+
+            </li>
+
+        {% endif %}
+
+    </ul>
 
 </nav>
 

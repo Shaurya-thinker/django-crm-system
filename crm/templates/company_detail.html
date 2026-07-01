@@ -97,23 +97,23 @@
 
                     </div>
 
-                    {% if not request.user|is_representative %}
+                    {% if request.user|has_permission:"company_update" or request.user|has_permission:"company_delete" %}
 
                         <div class="mt-4 d-flex gap-2">
 
-                            <a
-                                href="{% url 'update_company' company.slug %}"
-                                class="btn btn-warning"
-                            >
+                            {% if request.user|has_permission:"company_update" %}
+                            <a href="{% url 'update_company' company.slug %}"
+                            class="btn btn-warning">
                                 Edit Company
                             </a>
+                            {% endif %}
 
-                            <a
-                                href="{% url 'delete_company' company.slug %}"
-                                class="btn btn-danger"
-                            >
+                            {% if request.user|has_permission:"company_delete" %}
+                            <a href="{% url 'delete_company' company.slug %}"
+                            class="btn btn-danger">
                                 Delete Company
                             </a>
+                            {% endif %}
 
                         </div>
 

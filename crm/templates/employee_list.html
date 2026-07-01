@@ -4,127 +4,315 @@
 
 {% load crm_tags %}
 
-<h1>Employees</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-{% if request.user|is_admin %}
-<a
-    href="{% url 'create_employee' %}"
-    class="btn btn-primary mb-3"
->
-    Create Employee
-</a>
-{% endif %}
+    <h2 class="fw-bold mb-0">
+        Employees
+    </h2>
+
+    {% if request.user|has_permission:"employee_create" %}
+
+    <a
+        href="{% url 'create_employee' %}"
+        class="btn btn-primary"
+    >
+        <i class="bi bi-plus-lg me-1"></i>
+        Create Employee
+    </a>
+
+    {% endif %}
+
+</div>
 
 <form method="GET">
 
-    <input
-        type="text"
-        name="search"
-        value="{{ search }}"
-        placeholder="Search employee"
-    >
+    <div class="card border-0 shadow-sm mb-4">
 
-    <button
-        type="submit"
-        class="btn btn-primary"
-    >
-        Search
-    </button>
+        <div class="card-body">
+
+            <div class="row g-2">
+
+                <div class="col-md-5">
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="search"
+                        value="{{ search }}"
+                        placeholder="Search username, email, phone..."
+                    >
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <select
+                        name="role"
+                        class="form-select"
+                    >
+
+                        <option value="">All Roles</option>
+
+                        <option
+                            value="manager"
+                            {% if role == "manager" %}selected{% endif %}
+                        >
+                            Manager
+                        </option>
+
+                        <option
+                            value="representative"
+                            {% if role == "representative" %}selected{% endif %}
+                        >
+                            Representative
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <select
+                        name="access_role"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Access Roles
+                        </option>
+
+                        {% for ar in access_roles %}
+
+                            <option
+                                value="{{ ar.id }}"
+                                {% if access_role == ar.id|stringformat:"s" %}selected{% endif %}
+                            >
+                                {{ ar.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-1 d-grid">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="bi bi-search"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </form>
 
-<br>
+<div class="card border-0 shadow-sm">
 
-<table class="table table-bordered">
+    <div class="table-responsive">
 
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Reporting Manager</th>
-            <th>Designation</th>
-            <th>Phone</th>
-        </tr>
-    </thead>
+        <table class="table table-hover align-middle mb-0">
 
-    <tbody>
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Reporting Manager</th>
+                    <th>Access Role</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
 
-        {% for employee in page_obj %}
+            <tbody>
 
-            <tr>
+                {% for employee in page_obj %}
 
-                <td><a
-                        href="{% url 'employee_detail' employee.id %}"
-                    >
-                        {{ employee.user.username }}
-                    </a></td>
+                    <tr>
 
-                <td>{{ employee.get_role_display }}</td>
+                        <td>
 
-                <td>
-                    {% if employee.reporting_manager %}
-                        {{ employee.reporting_manager.user.username }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
+                            <a
+                                href="{% url 'employee_detail' employee.id %}"
+                                class="text-decoration-none fw-semibold"
+                            >
+                                {{ employee.user.username }}
+                            </a>
 
-                <td>{{ employee.designation }}</td>
+                        </td>
 
-                <td>{{ employee.phone }}</td>
-                
+                        <td>
 
-            </tr>
+                            {% if employee.role == 'manager' %}
 
-        {% empty %}
+                                <span class="badge bg-success">
+                                    Manager
+                                </span>
 
-            <tr>
-                <td colspan="5">
-                    No Employees Found
-                </td>
-            </tr>
+                            {% else %}
 
-        {% endfor %}
+                                <span class="badge bg-primary">
+                                    Representative
+                                </span>
 
-    </tbody>
+                            {% endif %}
 
-</table>
+                        </td>
 
-<nav>
+                        <td>
 
-    {% if page_obj.has_previous %}
+                            {% if employee.reporting_manager %}
 
-        <a href="?page=1">
-            First
-        </a>
+                                {{ employee.reporting_manager.user.username }}
 
-        <a href="?page={{ page_obj.previous_page_number }}">
-            Previous
-        </a>
+                            {% else %}
 
-    {% endif %}
+                                <span class="text-muted">—</span>
 
-    <span>
+                            {% endif %}
 
-        Page {{ page_obj.number }}
+                        </td>
 
-        of
+                        <td>{{ employee.access_role.name }}</td>
 
-        {{ page_obj.paginator.num_pages }}
+                        <td>{{ employee.phone }}</td>
+                        
 
-    </span>
+                    </tr>
 
-    {% if page_obj.has_next %}
+                {% empty %}
 
-        <a href="?page={{ page_obj.next_page_number }}">
-            Next
-        </a>
+                    <tr>
 
-        <a href="?page={{ page_obj.paginator.num_pages }}">
-            Last
-        </a>
+                        <td colspan="5" class="text-center py-5 text-muted">
 
-    {% endif %}
+                            <i class="bi bi-people display-5 d-block mb-2"></i>
+
+                            No employees found.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<nav class="mt-4">
+
+    <ul class="pagination justify-content-center">
+
+        {% if page_obj.has_previous %}
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&role={{ role }}&access_role={{ access_role }}&page=1"
+                >
+                    First
+                </a>
+
+            </li>
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&role={{ role }}&access_role={{ access_role }}&page={{ page_obj.previous_page_number }}"
+                >
+                    &laquo;
+                </a>
+
+            </li>
+
+        {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    First
+                </span>
+
+            </li>
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    &laquo;
+                </span>
+
+            </li>
+
+        {% endif %}
+
+        <li class="page-item active">
+
+            <span class="page-link">
+
+                {{ page_obj.number }}
+
+            </span>
+
+        </li>
+
+        {% if page_obj.has_next %}
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&role={{ role }}&access_role={{ access_role }}&page={{ page_obj.next_page_number }}"
+                >
+                    &raquo;
+                </a>
+
+            </li>
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?search={{ search }}&role={{ role }}&access_role={{ access_role }}&page={{ page_obj.paginator.num_pages }}"
+                >
+                    Last
+                </a>
+
+            </li>
+
+        {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    &raquo;
+                </span>
+
+            </li>
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+                    Last
+                </span>
+
+            </li>
+
+        {% endif %}
+
+    </ul>
 
 </nav>
 
