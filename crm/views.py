@@ -541,6 +541,21 @@ def update_company(request, slug):
         if company.manager != request.user.employee:
 
             raise PermissionDenied
+        
+    country_code = "+91"
+
+    codes = [
+        "+971", "+977", "+880", "+92", "+91", "+86",
+        "+82", "+81", "+65", "+61", "+55", "+49",
+        "+44", "+39", "+34", "+33", "+27", "+94",
+        "+7", "+1"
+    ]
+
+    for code in sorted(codes, key=len, reverse=True):
+        if company.phone.startswith(code):
+            country_code = code
+            company.phone = company.phone[len(code):]
+            break
 
     if request.method == 'POST':
 
@@ -553,7 +568,16 @@ def update_company(request, slug):
 
         if form.is_valid():
 
-            form.save()
+            company = form.save(commit=False)
+
+            country_code = request.POST.get(
+                'country_code',
+                '+91'
+            )
+
+            company.phone = f'{country_code}{company.phone}'
+
+            company.save()
 
             return redirect(
                 'company_detail',
@@ -574,6 +598,7 @@ def update_company(request, slug):
             'form': form,
             'heading': 'Update Company',
             'current_id': company.pk,
+            'country_code': country_code,
         }
     )
     
@@ -607,13 +632,7 @@ def delete_company(request, slug):
             'company_list'
         )
 
-    return render(
-        request,
-        'company_confirm_delete.html',
-        {
-            'company': company
-        }
-    )
+    return redirect('company_detail', slug=company.slug)
 
 
 
@@ -952,6 +971,25 @@ def update_employee(request, id):
         ):
 
             raise PermissionDenied
+        
+    country_code = "+91"
+
+    codes = [
+        "+971", "+977", "+880", "+92", "+91", "+86",
+        "+82", "+81", "+65", "+61", "+55", "+49",
+        "+44", "+39", "+34", "+33", "+27", "+94",
+        "+7", "+1"
+    ]
+
+    for code in sorted(codes, key=len, reverse=True):
+
+        if employee.phone.startswith(code):
+
+            country_code = code
+            employee.phone = employee.phone[len(code):]
+
+            break
+    
 
     if request.method == 'POST':
 
@@ -973,7 +1011,18 @@ def update_employee(request, id):
 
         if form.is_valid():
 
-            form.save()
+            employee = form.save(commit=False)
+
+            country_code = request.POST.get(
+                'country_code',
+                '+91'
+            )
+
+            employee.phone = (
+                f'{country_code}{employee.phone}'
+            )
+
+            employee.save()
 
             return redirect(
                 'employee_detail',
@@ -1001,6 +1050,7 @@ def update_employee(request, id):
             'form': form,
             'heading': 'Update Employee',
             'current_id': employee.pk,
+            'country_code': country_code,
         }
     )
     
@@ -1028,14 +1078,7 @@ def delete_employee(request, id):
             'employee_list'
         )
 
-    return render(
-        request,
-        'employee_confirm_delete.html',
-        {
-            'employee': employee
-        }
-    )
-    
+    return redirect('employee_detail', id=employee.pk)
     
 #### TASK ####
 
@@ -1296,13 +1339,7 @@ def delete_task(request, id):
             'task_list'
         )
 
-    return render(
-        request,
-        'task_confirm_delete.html',
-        {
-            'task': task
-        }
-    )
+    return redirect('task_detail', id=task.pk)
 
 
 

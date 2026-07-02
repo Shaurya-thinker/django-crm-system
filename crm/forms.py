@@ -2,7 +2,7 @@ from django import forms
 from .models import Company, Employee, Task, Role
 from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.models import User
-from .utils import * 
+from .utils import *
 
 class CompanyForm(forms.ModelForm):
 
@@ -261,23 +261,23 @@ class EmployeeUpdateForm(forms.ModelForm):
             'phone'
         )
 
+        if not phone:
+            raise forms.ValidationError(
+                'Phone number is required.'
+            )
+
         phone_str = str(phone)
 
-        digits_only = phone_str.replace(
-            '+',
-            ''
-        )
-
-        if not digits_only.isdigit():
+        if not phone_str.isdigit():
 
             raise forms.ValidationError(
                 'Phone number must contain only digits.'
             )
 
-        if len(digits_only) < 10:
+        if len(phone_str) != 10:
 
             raise forms.ValidationError(
-                'Phone number is too short.'
+                'Phone number must be exactly 10 digits.'
             )
 
         return phone_str
@@ -356,23 +356,23 @@ class ManagerEmployeeUpdateForm(forms.ModelForm):
             'phone'
         )
 
+        if not phone:
+            raise forms.ValidationError(
+                'Phone number is required.'
+            )
+
         phone_str = str(phone)
 
-        digits_only = phone_str.replace(
-            '+',
-            ''
-        )
-
-        if not digits_only.isdigit():
+        if not phone_str.isdigit():
 
             raise forms.ValidationError(
                 'Phone number must contain only digits.'
             )
 
-        if len(digits_only) < 10:
+        if len(phone_str) != 10:
 
             raise forms.ValidationError(
-                'Phone number is too short.'
+                'Phone number must be exactly 10 digits.'
             )
 
         return phone_str
