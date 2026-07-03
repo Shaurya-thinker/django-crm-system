@@ -488,6 +488,9 @@ def create_company(request):
             company = form.save(
                 commit=False
             )
+            
+            if is_manager(request.user):
+                company.manager = request.user.employee
 
             country_code = request.POST.get(
                 'country_code',
@@ -501,7 +504,7 @@ def create_company(request):
             company.save()
 
             return redirect(
-                'dashboard'
+                'company_list'
             )
 
     else:
@@ -536,12 +539,19 @@ def update_company(request, slug):
         slug=slug
     )
     
+    
     if is_manager(request.user):
 
         if company.manager != request.user.employee:
 
             raise PermissionDenied
         
+    edit_mode = (
+        request.GET.get('edit') == '1'
+        or
+        request.method == 'POST'
+    )
+    
     country_code = "+91"
 
     codes = [
@@ -580,7 +590,7 @@ def update_company(request, slug):
             company.save()
 
             return redirect(
-                'company_detail',
+                'update_company',
                 slug=company.slug
             )
 
@@ -599,6 +609,8 @@ def update_company(request, slug):
             'heading': 'Update Company',
             'current_id': company.pk,
             'country_code': country_code,
+            'company': company,
+            'edit_mode': edit_mode,
         }
     )
     
@@ -693,35 +705,6 @@ def company_list(request):
         {
             'page_obj': page_obj,
             'search': search
-        }
-    )
-    
-
-@login_required
-def company_detail(request, slug):
-    
-    if not has_permission(
-        request.user,
-        "company_view"
-    ):
-        raise PermissionDenied
-
-    company = get_object_or_404(
-        Company,
-        slug=slug
-    )
-    
-    if is_manager(request.user):
-
-        if company.manager != request.user.employee:
-
-            raise PermissionDenied
-
-    return render(
-        request,
-        'company_detail.html',
-        {
-            'company': company
         }
     )
 
@@ -912,42 +895,6 @@ def employee_list(request):
     
 
 @login_required
-def employee_detail(request, id):
-
-    if not has_permission(
-        request.user,
-        "employee_view"
-    ):
-        raise PermissionDenied
-
-    employee = get_object_or_404(
-        Employee,
-        id=id
-    )
-
-    if is_manager(request.user):
-
-        if employee.role != 'representative':
-
-            raise PermissionDenied
-
-        if (
-            employee.reporting_manager
-            != request.user.employee
-        ):
-
-            raise PermissionDenied
-
-    return render(
-        request,
-        'employee_detail.html',
-        {
-            'employee': employee
-        }
-    )
-    
-
-@login_required
 def update_employee(request, id):
 
     employee = get_object_or_404(
@@ -971,6 +918,12 @@ def update_employee(request, id):
         ):
 
             raise PermissionDenied
+        
+    edit_mode = (
+        request.GET.get('edit') == '1'
+        or
+        request.method == 'POST'
+    )
         
     country_code = "+91"
 
@@ -1025,7 +978,7 @@ def update_employee(request, id):
             employee.save()
 
             return redirect(
-                'employee_detail',
+                'update_employee',
                 id=employee.pk
             )
 
@@ -1051,6 +1004,8 @@ def update_employee(request, id):
             'heading': 'Update Employee',
             'current_id': employee.pk,
             'country_code': country_code,
+            'employee': employee,
+            'edit_mode': edit_mode,
         }
     )
     
@@ -1219,41 +1174,6 @@ def task_list(request):
     )
     
     
-
-@login_required
-def task_detail(request, id):
-
-    task = get_object_or_404(
-        Task,
-        id=id
-    )
-    
-    if not has_permission(
-        request.user,
-        "task_view"
-    ):
-        raise PermissionDenied
-
-    if is_representative(request.user):
-
-        if task.employee != request.user.employee:
-
-            raise PermissionDenied
-
-    elif is_manager(request.user):
-
-        if task.employee.reporting_manager != request.user.employee:
-
-            raise PermissionDenied
-
-    return render(
-        request,
-        'task_detail.html',
-        {
-            'task': task
-        }
-    )
-    
 @login_required
 def update_task(request, id):
     
@@ -1273,6 +1193,12 @@ def update_task(request, id):
         if task.employee.reporting_manager != request.user.employee:
 
             raise PermissionDenied
+        
+    edit_mode = (
+        request.GET.get('edit') == '1'
+        or
+        request.method == 'POST'
+    )
 
         
     if request.method == 'POST':
@@ -1289,7 +1215,7 @@ def update_task(request, id):
             form.save()
 
             return redirect(
-                'task_detail',
+                'update_task',
                 id=task.pk
             )
 
@@ -1305,7 +1231,9 @@ def update_task(request, id):
         'task_form.html',
         {
             'form': form,
-            'heading': 'Update Task'
+            'heading': 'Update Task',
+            'task': task,
+            'edit_mode': edit_mode,
         }
     )
     

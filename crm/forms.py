@@ -13,6 +13,7 @@ class CompanyForm(forms.ModelForm):
         fields = [
             'name',
             'manager',
+            'assignee',
             'email',
             'phone',
             'address',
@@ -36,22 +37,29 @@ class CompanyForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         manager_queryset = Employee.objects.filter(
-            access_role__name='Manager'
+            role='manager'
         )
 
-        if (
-            self.user
-            and
-            hasattr(self.user, 'employee')
-        ):
+        assignee_queryset = Employee.objects.filter(
+            role='representative'
+        )
 
-            manager_queryset = manager_queryset.filter(
-                pk=self.user.employee.pk
-            )
+        if self.user and hasattr(self.user, 'employee'):
 
-        self.fields[
-            'manager'
-        ].queryset = manager_queryset
+            if self.user.employee.role == 'manager':
+
+                manager_queryset = manager_queryset.filter(
+                    pk=self.user.employee.pk
+                )
+
+                assignee_queryset = assignee_queryset.filter(
+                    reporting_manager=self.user.employee
+                )
+
+        self.fields['manager'].queryset = manager_queryset
+        self.fields['manager'].initial = self.user.employee
+        self.fields['manager'].disabled = True
+        self.fields['assignee'].queryset = assignee_queryset
 
         for field in self.fields.values():
 
@@ -87,6 +95,28 @@ class CompanyForm(forms.ModelForm):
             )
 
         return phone_str
+    
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        manager = cleaned_data.get(
+            'manager'
+        )
+
+        assignee = cleaned_data.get(
+            'assignee'
+        )
+
+        if assignee and manager:
+
+            if assignee.reporting_manager != manager:
+
+                raise forms.ValidationError(
+                    'Selected assignee does not report to the selected manager.'
+                )
+
+        return cleaned_data
 
 
 class EmployeeForm(forms.ModelForm):

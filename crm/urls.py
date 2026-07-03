@@ -7,17 +7,14 @@ from .views import (
     logout_view,
     create_company,
     company_list,
-    company_detail,
     update_company,
     delete_company,
     employee_list,
     create_employee,
-    employee_detail,
     update_employee,
     delete_employee,
     create_task,
     task_list,
-    task_detail,
     update_task,
     delete_task,
     export_companies_csv,
@@ -79,11 +76,6 @@ urlpatterns = [
         name='download_company_template'
     ),
     path(
-        'companies/<slug:slug>/',
-        company_detail,
-        name='company_detail'
-    ),
-    path(
         'companies/<slug:slug>/update/',
         update_company,
         name='update_company'
@@ -104,11 +96,6 @@ urlpatterns = [
         name='create_employee'
     ),
     path(
-        'employees/<int:id>/',
-        employee_detail,
-        name='employee_detail'
-    ),
-    path(
         'employees/<int:id>/update/',
         update_employee,
         name='update_employee'
@@ -127,11 +114,6 @@ urlpatterns = [
         'tasks/',
         task_list,
         name='task_list'
-    ),
-    path(
-        'tasks/<int:id>/',
-        task_detail,
-        name='task_detail'
     ),
     path(
         'tasks/<int:id>/update/',

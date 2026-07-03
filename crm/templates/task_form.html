@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-
+{% load crm_tags %}
+{% load static %}
 {% block content %}
 
 <h1 class="mb-4">
@@ -16,11 +17,30 @@
     <div class="card-body">
 
         <form
+            id="taskForm"
             method="POST"
             enctype="multipart/form-data"
         >
 
             {% csrf_token %}
+
+            {% if task and not edit_mode %}
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    document.querySelectorAll(
+                        "#taskForm input:not([type='hidden']), #taskForm textarea, #taskForm select"
+                    ).forEach(function (field) {
+                        field.disabled = true;
+                    });
+
+                    if (window.CKEDITOR) {
+                        for (const instance in CKEDITOR.instances) {
+                            CKEDITOR.instances[instance].setReadOnly(true);
+                        }
+                    }
+                });
+                </script>
+            {% endif %}
 
             {% for field in form %}
 
@@ -54,16 +74,123 @@
 
             {% endfor %}
 
-            <button
-                type="submit"
-                class="btn btn-primary"
-            >
-                Save Task
-            </button>
+            {% if task %}
+
+                {% if edit_mode %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Task
+                    </button>
+
+                {% else %}
+
+                    <div class="d-flex gap-2">
+
+                        {% if request.user|has_permission:"task_update" %}
+
+                            <a
+                                href="?edit=1"
+                                class="btn btn-warning"
+                            >
+                                Edit Task
+                            </a>
+
+                        {% endif %}
+
+                        {% if request.user|has_permission:"task_delete" %}
+
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                            >
+                                Delete Task
+                            </button>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            {% else %}
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Save Task
+                </button>
+
+            {% endif %}
 
         </form>
     </div>
 </div>
+{% if task %}
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        Delete Task
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                    ></button>
+                </div>
+
+                <div class="modal-body text-center">
+
+                    <i class="bi bi-exclamation-triangle-fill text-danger display-3"></i>
+
+                    <h5 class="mt-3">
+                        Are you sure?
+                    </h5>
+
+                    <p>
+                        This will permanently delete
+                        <strong>{{ task.title }}</strong>.
+                    </p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancel
+                    </button>
+
+                    <form
+                        method="POST"
+                        action="{% url 'delete_task' task.id %}"
+                    >
+                        {% csrf_token %}
+
+                        <button class="btn btn-danger">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endif %}
+
 {{form.media}}
 
 {% endblock %}
