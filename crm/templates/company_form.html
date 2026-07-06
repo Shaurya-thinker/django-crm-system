@@ -233,6 +233,44 @@ if(document.getElementById('id_phone')){
 }
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const manager = document.getElementById("id_manager");
+    const assignee = document.getElementById("id_assignee");
+
+    if (!manager || !assignee) {
+        return;
+    }
+
+    manager.addEventListener("change", function () {
+
+        assignee.innerHTML = '<option value="">---------</option>';
+
+        if (!this.value) {
+            return;
+        }
+
+        fetch(`/ajax/representatives/?manager_id=${this.value}`)
+            .then(response => response.json())
+            .then(data => {
+
+                data.employees.forEach(emp => {
+
+                    assignee.innerHTML +=
+                        `<option value="${emp.id}">
+                            ${emp.user__username}
+                        </option>`;
+
+                });
+
+            });
+
+    });
+
+});
+</script>
+
 {% if company %}
     <div class="modal fade" id="deleteModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">

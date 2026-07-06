@@ -28,6 +28,8 @@ from .views import (
     create_access_role,
     update_access_role,
     manage_role_permissions,
+    ajax_get_representatives,
+    ajax_get_companies,
 )
 
 urlpatterns = [
@@ -188,5 +190,15 @@ urlpatterns = [
     "access-roles/<int:id>/permissions/",
         manage_role_permissions,
         name="manage_role_permissions",
+    ),
+    path(
+        'ajax/representatives/',
+        ajax_get_representatives,
+        name='ajax_get_representatives'
+    ),
+    path(
+        'ajax/companies/',
+        ajax_get_companies,
+        name='ajax_get_companies'
     ),
 ]

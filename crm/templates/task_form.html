@@ -191,6 +191,86 @@
     </div>
 {% endif %}
 
+<script>
+
+const managerSelect = document.getElementById("id_manager");
+const employeeSelect = document.getElementById("id_employee");
+
+if (managerSelect) {
+
+    managerSelect.addEventListener(
+        "change",
+        function () {
+
+            const managerId = this.value;
+
+            employeeSelect.innerHTML =
+                '<option value="">---------</option>';
+
+            if (!managerId) {
+                return;
+            }
+
+            fetch(
+                `/ajax/representatives/?manager_id=${managerId}`
+            )
+            .then(
+                response => response.json()
+            )
+            .then(data => {
+
+                data.employees.forEach(employee => {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value = employee.id;
+
+                    option.textContent =
+                        employee.user__username;
+
+                    employeeSelect.appendChild(option);
+
+                });
+
+            });
+
+            const companySelect = document.getElementById("id_company");
+
+            companySelect.innerHTML =
+                '<option value="">---------</option>';
+
+            fetch(
+                `/ajax/companies/?manager_id=${managerId}`
+            )
+            .then(
+                response => response.json()
+            )
+            .then(data => {
+
+                data.companies.forEach(company => {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value = company.id;
+
+                    option.textContent =
+                        company.name;
+
+                    companySelect.appendChild(option);
+
+                });
+
+            });
+
+        }
+    );
+
+}
+
+</script>
+
 {{form.media}}
 
 {% endblock %}

@@ -1,0 +1,56 @@
+{% extends "emails/base.html" %}
+
+{% block title %}
+Task Updated
+{% endblock %}
+
+{% block content %}
+
+<h2>Hello {{ representative.user.username }},</h2>
+
+<p>
+The following task assigned to you has been updated.
+</p>
+
+<div class="card">
+
+    <div class="row">
+        <strong>Task</strong><br>
+        {{ task.title }}
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <strong>Company</strong><br>
+        {{ task.company.name }}
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <strong>Status</strong><br>
+        {{ task.get_status_display }}
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <strong>Priority</strong><br>
+        {{ task.get_priority_display }}
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <strong>Deadline</strong><br>
+        {{ task.deadline }}
+    </div>
+
+</div>
+
+<p>
+Please log in to CRM to review the latest task details.
+</p>
+
+{% endblock %}

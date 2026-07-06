@@ -113,6 +113,48 @@
 
 </div>
 
+
+{% if request.user|is_representative %}
+
+<h3 class="fw-bold mb-3">
+    My Companies
+</h3>
+
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <ul class="list-group list-group-flush">
+
+            {% for company in assigned_companies %}
+
+                <li class="list-group-item d-flex justify-content-between">
+
+                    <strong>{{ company.name }}</strong>
+
+                    <span class="text-muted">
+                        {{ company.manager.user.username }}
+                    </span>
+
+                </li>
+
+            {% empty %}
+
+                <li class="list-group-item text-muted">
+                    No company assigned.
+                </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
 <h3 class="fw-bold mb-3">
     {{ recent_tasks_heading }}
 </h3>

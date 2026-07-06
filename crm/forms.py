@@ -40,9 +40,32 @@ class CompanyForm(forms.ModelForm):
             role='manager'
         )
 
-        assignee_queryset = Employee.objects.filter(
-            role='representative'
-        )
+        if self.user and is_admin(self.user):
+
+            # Initial Create page
+            assignee_queryset = Employee.objects.none()
+
+            # Form submitted (POST)
+            if self.data.get("manager"):
+
+                assignee_queryset = Employee.objects.filter(
+                    role="representative",
+                    reporting_manager_id=self.data.get("manager"),
+                )
+
+            # Update page
+            elif self.instance.pk and self.instance.manager:
+
+                assignee_queryset = Employee.objects.filter(
+                    role="representative",
+                    reporting_manager=self.instance.manager,
+                )
+
+        else:
+
+            assignee_queryset = Employee.objects.filter(
+                role="representative"
+            )
 
         if self.user and hasattr(self.user, 'employee'):
 
@@ -57,8 +80,14 @@ class CompanyForm(forms.ModelForm):
                 )
 
         self.fields['manager'].queryset = manager_queryset
-        self.fields['manager'].initial = self.user.employee
-        self.fields['manager'].disabled = True
+
+        if self.user and hasattr(self.user, 'employee'):
+
+            if self.user.employee.role == 'manager':
+
+                self.fields['manager'].initial = self.user.employee
+                self.fields['manager'].disabled = True
+
         self.fields['assignee'].queryset = assignee_queryset
 
         for field in self.fields.values():
@@ -409,6 +438,13 @@ class ManagerEmployeeUpdateForm(forms.ModelForm):
 
     
 class TaskForm(forms.ModelForm):
+    
+    manager = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(
+            role='manager'
+        ),
+        required=False
+    )
 
     class Meta:
 
@@ -417,6 +453,7 @@ class TaskForm(forms.ModelForm):
         fields = [
             'title',
             'description',
+            'manager',
             'company',
             'employee',
             'status',
@@ -448,10 +485,44 @@ class TaskForm(forms.ModelForm):
             *args,
             **kwargs
         )
+        
+        if self.instance.pk and self.instance.company:
 
-        if user:
+            self.fields["manager"].initial = self.instance.company.manager
+            
+        
+        if user and is_admin(user):
 
-            if is_manager(user):
+            self.fields['employee'].queryset = Employee.objects.none()
+            self.fields['company'].queryset = Company.objects.none()
+
+            if self.data.get('manager'):
+                manager_id = self.data.get('manager')
+
+                self.fields['employee'].queryset = Employee.objects.filter(
+                    role='representative',
+                    reporting_manager_id=manager_id
+                )
+
+                self.fields['company'].queryset = Company.objects.filter(
+                    manager_id=manager_id
+                )
+
+            elif self.instance.pk and self.instance.company:
+                manager = self.instance.company.manager
+
+                self.fields['manager'].initial = manager
+
+                self.fields['company'].queryset = Company.objects.filter(
+                    manager=manager
+                )
+
+                self.fields['employee'].queryset = Employee.objects.filter(
+                    role='representative',
+                    reporting_manager=manager
+                )
+
+        elif user and is_manager(user):
 
                 self.fields[
                     'company'

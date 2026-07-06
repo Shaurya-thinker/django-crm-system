@@ -1,0 +1,48 @@
+{% extends "emails/base.html" %}
+
+{% block title %}
+Task Assigned
+{% endblock %}
+
+{% block content %}
+
+<h2>Hello {{ representative.user.username }},</h2>
+
+<p>
+A new task has been assigned to you.
+</p>
+
+<div class="info-box">
+
+    <strong>Task</strong><br>
+    {{ task.title }}
+
+    <hr>
+
+    <strong>Company</strong><br>
+    {{ task.company.name }}
+
+    <hr>
+
+    <strong>Priority</strong><br>
+    {{ task.get_priority_display }}
+
+    <hr>
+
+    <strong>Status</strong><br>
+    {{ task.get_status_display }}
+
+    <hr>
+
+    <strong>Deadline</strong><br>
+    {{ task.deadline|date:"F d, Y h:i A" }}
+
+</div>
+
+<p>
+
+Please login to the CRM System to start working on this task.
+
+</p>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "emails/base.html" %}
+
+{% block title %}
+Welcome to CRM System
+{% endblock %}
+
+{% block content %}
+
+<h2>Welcome {{ employee.user.username }}!</h2>
+
+<p>
+Your CRM account has been created successfully.
+</p>
+
+<div style="background:#f8f9fa;padding:20px;border-radius:8px;margin:20px 0;">
+
+    <p><strong>Username</strong><br>
+    {{ employee.user.username }}</p>
+
+    <hr>
+
+    <p><strong>Email</strong><br>
+    {{ employee.user.email }}</p>
+
+    <hr>
+
+    <p><strong>Role</strong><br>
+    {{ employee.get_role_display }}</p>
+
+    <hr>
+
+    <p><strong>Access Role</strong><br>
+    {{ employee.access_role.name }}</p>
+
+    {% if employee.reporting_manager %}
+
+    <hr>
+
+    <p><strong>Reporting Manager</strong><br>
+    {{ employee.reporting_manager.user.username }}</p>
+
+    {% endif %}
+
+</div>
+
+<p>
+You can now login to the CRM System using your assigned credentials.
+</p>
+
+<p>
+Please contact your administrator if you face any login issues.
+</p>
+
+{% endblock %}

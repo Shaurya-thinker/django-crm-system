@@ -1,4 +1,5 @@
 {% load crm_tags %}
+
 {% with request.resolver_match.url_name as current_url %}
 <!DOCTYPE html>
 <html>
@@ -25,16 +26,23 @@
 
     <!-- Sidebar -->
     <div
-        class="bg-dark text-white p-3 d-flex flex-column"
+        class="bg-dark text-white p-4 d-flex flex-column"
         style="
-            width:240px;
+            width:270px;
             min-height:100vh;
         "
     >
 
-        <h3 class="mb-4 text-center">
-            CRM System
-        </h3>
+        <div class="text-center mb-4">
+
+            <h3 class="mt-2 mb-0">
+                CRM System
+            </h3>
+
+            <small class="text-secondary">
+                Management Portal
+            </small>
+        </div>
 
         <div class="list-group list-group-flush">
 
@@ -103,10 +111,14 @@
 
             <a
                 href="{% url 'access_role_list' %}"
-                class="list-group-item list-group-item-action bg-dark text-white border-0"
+                class="list-group-item list-group-item-action border-0
+                {% if current_url == 'access_role_list' or current_url == 'create_access_role' or current_url == 'update_access_role' or current_url == 'manage_role_permissions' %}
+                active bg-primary text-white
+                {% else %}
+                bg-dark text-white
+                {% endif %}"
             >
                 <i class="bi bi-shield-lock me-2"></i>
-
                 Access Control
             </a>
 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}CRM Notification{% endblock %}</title>
+
+    <style>
+
+        body{
+            margin:0;
+            padding:0;
+            background:#f4f6f9;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        .wrapper{
+            width:100%;
+            padding:40px 0;
+            background:#f4f6f9;
+        }
+
+        .container{
+            max-width:650px;
+            margin:auto;
+            background:#ffffff;
+            border-radius:10px;
+            overflow:hidden;
+            box-shadow:0 5px 20px rgba(0,0,0,.08);
+        }
+
+        .header{
+            background:#0d6efd;
+            color:white;
+            padding:30px;
+            text-align:center;
+        }
+
+        .header h1{
+            margin:0;
+            font-size:30px;
+        }
+
+        .header p{
+            margin-top:8px;
+            opacity:.9;
+        }
+
+        .content{
+            padding:35px;
+            color:#333;
+            line-height:1.7;
+        }
+
+        .content h2{
+            margin-top:0;
+        }
+
+        .button{
+            display:inline-block;
+            padding:12px 28px;
+            background:#0d6efd;
+            color:white !important;
+            text-decoration:none;
+            border-radius:6px;
+            font-weight:bold;
+        }
+
+        .info-box{
+            background:#f8f9fa;
+            border-left:4px solid #0d6efd;
+            padding:18px;
+            margin:25px 0;
+            border-radius:6px;
+        }
+
+        .footer{
+            background:#f8f9fa;
+            text-align:center;
+            padding:20px;
+            color:#777;
+            font-size:13px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="container">
+
+        <div class="header">
+
+            <h1>CRM System</h1>
+
+            <p>Management Portal Notification</p>
+
+        </div>
+
+        <div class="content">
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+        <div class="footer">
+
+            This is an automated email from the CRM System.<br>
+
+            Please do not reply to this message.
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

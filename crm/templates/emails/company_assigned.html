@@ -1,0 +1,46 @@
+{% extends "emails/base.html" %}
+
+{% block title %}
+Company Assigned
+{% endblock %}
+
+{% block content %}
+
+<h2>Hello {{ representative.user.username }},</h2>
+
+<p>
+A company has been assigned to you.
+</p>
+
+<div style="background:#f8f9fa;padding:20px;border-radius:8px;margin:20px 0;">
+
+    <p><strong>Company</strong><br>
+    {{ company.name }}</p>
+
+    <hr>
+
+    <p><strong>Manager</strong><br>
+    {{ company.manager.user.username }}</p>
+
+    <hr>
+
+    <p><strong>Email</strong><br>
+    {{ company.email }}</p>
+
+    <hr>
+
+    <p><strong>Phone</strong><br>
+    {{ company.phone }}</p>
+
+    <hr>
+
+    <p><strong>Address</strong><br>
+    {{ company.address }}</p>
+
+</div>
+
+<p>
+Please login to the CRM System to view and manage this company.
+</p>
+
+{% endblock %}

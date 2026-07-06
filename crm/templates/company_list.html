@@ -14,7 +14,7 @@
         {% if request.user|has_permission:"company_create" %}
         <a href="{% url 'create_company' %}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1"></i>
-            Create
+            Create Company
         </a>
         {% endif %}
 
@@ -88,6 +88,8 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Manager</th>
+                    <th>Assignee</th>
                     <th>Phone</th>
                     <th class="text-center">
                         Logo
@@ -115,6 +117,18 @@
 
                         <td>
                             {{ company.email }}
+                        </td>
+
+                        <td>
+                            {{ company.manager.user.username }}
+                        </td>
+
+                        <td>
+                            {% if company.assignee %}
+                                {{ company.assignee.user.username }}
+                            {% else %}
+                                —
+                            {% endif %}
                         </td>
 
                         <td>
@@ -146,7 +160,7 @@
 
                     <tr>
 
-                        <td colspan="4" class="text-center py-5 text-muted">
+                        <td colspan="6" class="text-center py-5 text-muted">
 
                             <i class="bi bi-building display-5 text-secondary mb-2 d-block"></i>
 

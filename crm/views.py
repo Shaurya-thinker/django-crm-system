@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.contrib import messages
 import csv
+from .utils import send_notification_email
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
@@ -60,6 +61,50 @@ def custom_404(request, exception):
         status=404
     )
     
+
+@login_required
+def ajax_get_representatives(request):
+
+    manager_id = request.GET.get(
+        'manager_id'
+    )
+
+    employees = Employee.objects.filter(
+        role='representative',
+        reporting_manager_id=manager_id
+    ).values(
+        'id',
+        'user__username'
+    )
+
+    return JsonResponse(
+        {
+            'employees': list(employees)
+        }
+    )
+    
+
+@login_required
+def ajax_get_companies(request):
+
+    manager_id = request.GET.get(
+        'manager_id'
+    )
+
+    companies = Company.objects.filter(
+        manager_id=manager_id
+    ).values(
+        'id',
+        'name'
+    )
+
+    return JsonResponse(
+        {
+            'companies': list(companies)
+        }
+    )
+
+
 
 def ajax_validate(request):
 
@@ -450,6 +495,14 @@ def dashboard(request):
         recent_tasks = Task.objects.order_by(
             '-created_at'
         )[:5]
+        
+    assigned_companies = None
+
+    if is_representative(request.user):
+
+        assigned_companies = Company.objects.filter(
+            assignee=request.user.employee
+        )
 
     return render(
         request,
@@ -460,6 +513,7 @@ def dashboard(request):
             'total_tasks': total_tasks,
             'recent_tasks': recent_tasks,
             'recent_tasks_heading': recent_tasks_heading,
+            'assigned_companies': assigned_companies,
         }
     )
     
@@ -502,6 +556,20 @@ def create_company(request):
             )
 
             company.save()
+            
+            if company.assignee:
+
+                send_notification_email(
+                    subject="New Company Assigned",
+                    template_name="emails/company_assigned.html",
+                    context={
+                        "company": company,
+                        "representative": company.assignee,
+                    },
+                    recipient_list=[
+                        company.assignee.user.email
+                    ],
+                )
 
             return redirect(
                 'company_list'
@@ -539,6 +607,7 @@ def update_company(request, slug):
         slug=slug
     )
     
+    old_assignee = company.assignee
     
     if is_manager(request.user):
 
@@ -588,6 +657,38 @@ def update_company(request, slug):
             company.phone = f'{country_code}{company.phone}'
 
             company.save()
+            
+            new_assignee = company.assignee
+
+            if old_assignee != new_assignee:
+
+                if old_assignee:
+
+                    send_notification_email(
+                        subject="Company Unassigned",
+                        template_name="emails/company_unassigned.html",
+                        context={
+                            "company": company,
+                            "representative": old_assignee,
+                        },
+                        recipient_list=[
+                            old_assignee.user.email
+                        ],
+                    )
+
+                if new_assignee:
+
+                    send_notification_email(
+                        subject="New Company Assigned",
+                        template_name="emails/company_assigned.html",
+                        context={
+                            "company": company,
+                            "representative": new_assignee,
+                        },
+                        recipient_list=[
+                            new_assignee.user.email
+                        ],
+                    )
 
             return redirect(
                 'update_company',
@@ -657,15 +758,19 @@ def company_list(request):
     ):
         raise PermissionDenied
    
-    if is_manager(request.user):
+    if is_admin(request.user):
 
-        companies = Company.objects.filter(
-            manager=request.user.employee
-        )
+        companies = Company.objects.all()
+
+    elif is_manager(request.user):
+
+        companies = Company.objects.all()
 
     else:
 
-        companies = Company.objects.all()
+        companies = Company.objects.filter(
+            assignee=request.user.employee
+    )
 
     search = request.GET.get(
         'search',
@@ -767,6 +872,17 @@ def create_employee(request):
                 )
 
                 employee.save()
+                
+                send_notification_email(
+                    subject="Welcome to CRM System",
+                    template_name="emails/welcome_employee.html",
+                    context={
+                        "employee": employee,
+                    },
+                    recipient_list=[
+                        employee.user.email
+                    ],
+                )
 
                 employee_group = Group.objects.get(
                     name='Employee'
@@ -1056,7 +1172,19 @@ def create_task(request):
 
         if form.is_valid():
 
-            form.save()
+            task = form.save()
+
+            send_notification_email(
+                subject='New Task Assigned',
+                template_name='emails/task_assigned.html',
+                context={
+                    'task': task,
+                    'employee': task.employee,
+                },
+                recipient_list=[
+                    task.employee.user.email,
+                ],
+            )
 
             return redirect(
                 'task_list'
@@ -1182,6 +1310,19 @@ def update_task(request, id):
         id=id
     )
     
+    old_employee = task.employee
+
+    old_values = {
+        "title": task.title,
+        "description": task.description,
+        "company": task.company,
+        "employee": task.employee,
+        "status": task.status,
+        "priority": task.priority,
+        "deadline": task.deadline,
+        "attachment": task.attachment.name if task.attachment else "",
+    }
+    
     if not has_permission(
         request.user,
         "task_update"
@@ -1212,7 +1353,66 @@ def update_task(request, id):
 
         if form.is_valid():
 
-            form.save()
+            task = form.save()
+            
+            new_values = {
+                "title": task.title,
+                "description": task.description,
+                "company": task.company,
+                "employee": task.employee,
+                "status": task.status,
+                "priority": task.priority,
+                "deadline": task.deadline,
+                "attachment": task.attachment.name if task.attachment else "",
+            }
+            
+            changed = old_values != new_values
+
+            # Employee changed
+            if old_employee != task.employee:
+
+                if old_employee:
+
+                    send_notification_email(
+                        subject="Task Unassigned",
+                        template_name="emails/task_unassigned.html",
+                        context={
+                            "task": task,
+                            "representative": old_employee,
+                        },
+                        recipient_list=[
+                            old_employee.user.email
+                        ],
+                    )
+
+                if task.employee:
+
+                    send_notification_email(
+                        subject="New Task Assigned",
+                        template_name="emails/task_assigned.html",
+                        context={
+                            "task": task,
+                            "representative": task.employee,
+                        },
+                        recipient_list=[
+                            task.employee.user.email
+                        ],
+                    )
+
+            # Same employee, task details changed
+            elif changed:
+
+                send_notification_email(
+                    subject="Task Updated",
+                    template_name="emails/task_updated.html",
+                    context={
+                        "task": task,
+                        "representative": task.employee,
+                    },
+                    recipient_list=[
+                        task.employee.user.email
+                    ],
+                )
 
             return redirect(
                 'update_task',
