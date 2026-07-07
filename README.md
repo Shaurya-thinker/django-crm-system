@@ -1,7 +1,7 @@
 # <p align="center">🚀 Django CRM System</p>
 
 <p align="center">
-  <b>Role-Based Customer Relationship Management Platform built with Django & PostgreSQL</b>
+  <b>Role-based CRM platform built with Django, PostgreSQL, CKEditor, and Cloudinary</b>
 </p>
 
 <p align="center">
@@ -14,138 +14,139 @@
 
 </p>
 
-<p align="center">
-
-![Stars](https://img.shields.io/github/stars/Shaurya-thinker/django-crm-system?style=social)
-![Forks](https://img.shields.io/github/forks/Shaurya-thinker/django-crm-system?style=social)
-![Issues](https://img.shields.io/github/issues/Shaurya-thinker/django-crm-system)
-
-</p>
-
----
-
-<p align="center">
-
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=3000&pause=1000&center=true&width=900&lines=Customer+Relationship+Management+System;Role-Based+Access+Control;PostgreSQL+Powered;Production+Ready+Django+Application;Deployed+on+Render+with+CI%2FCD">
-
-</p>
-
 ---
 
 # 🌐 Live Demo
 
-### Production URL
-
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://django-crm-system-yegs.onrender.com)
+Production URL: [django-crm-system-yegs.onrender.com](https://django-crm-system-yegs.onrender.com)
 
 ---
 
 # 🎮 Demo Credentials
 
-Explore the application using the demo accounts below.
-
 | Role | Username | Password |
-|--------|----------|----------|
+|------|----------|----------|
 | Admin | `demo_admin` | `demo@1234` |
 | Manager | `demo_manager` | `demo@1234` |
-| Employee | `demo_employee` | `demo@1234` |
+| Representative | `demo_representative` | `demo@1234` |
 
-> **Note:** Demo accounts are provided for evaluation purposes. Django Admin Panel access is restricted.
+> Demo accounts are intended for evaluation. Admin features are controlled through role and permission checks in the app.
 
 ---
 
 # 📖 Project Overview
 
-Django CRM System is a full-stack Customer Relationship Management platform designed to manage companies, employees, and tasks through a secure role-based workflow.
+Django CRM System is a customer relationship management application for managing companies, employees, tasks, and role-based access. The app now includes a dedicated access control module, CSV company import/export helpers, email notifications, Cloudinary-backed media uploads, and dynamic AJAX-driven form behavior.
 
-The application demonstrates real-world Django development concepts including:
+The project demonstrates real-world Django concepts including:
 
-* Authentication & Authorization
-* Role-Based Access Control
-* PostgreSQL Integration
-* File Upload Handling
-* CKEditor Integration
-* Search & Filtering
-* Production Deployment
-* Environment Variables
-* CI/CD Workflow
+* Authentication and authorization
+* Custom role and permission management
+* Company, employee, and task workflows
+* Search, filtering, and pagination
+* Rich text task descriptions with CKEditor
+* File uploads for logos, profiles, and task attachments
+* CSV import/export and template download
+* Email notifications for key workflow events
+* Environment-based configuration
+* Production deployment with Render
+
+---
+
+# ⭐ Highlights
+
+* Role-Based Access Control (RBAC)
+* Dynamic Manager–Representative hierarchy
+* Company & Task assignment workflows
+* CKEditor rich text editor
+* Cloudinary media storage
+* AJAX-powered dynamic forms
+* CSV import/export support
+* Email notification system
+* Responsive Bootstrap UI
+* Production deployment on Render
 
 ---
 
 # ✨ Core Features
 
-### 🛡 Role-Based Access Control
+### 🛡 Access Control
 
-* Admin → Full Access
-* Manager → Manage Companies & Tasks
-* Employee → View Assigned Tasks
-
----
+* Admin-only access role management
+* Role-permission mapping through `Role`, `Permission`, and `RolePermission`
+* Permission checks for company, employee, task, and import actions
+* Custom 403 and 404 error pages
 
 ### 🏢 Company Management
 
-* Create Companies
-* Update Company Details
-* Company Logo Upload
-* Company Search
-* Pagination Support
-* Slug-Based URLs
-
----
+* Create, update, and delete companies
+* Slug-based company URLs
+* Company logo uploads
+* Search and pagination
+* CSV import, export, and template download
+* Manager and representative assignment rules
 
 ### 👨‍💼 Employee Management
 
-* Create Employees
-* Employee Profiles
-* Company Assignment
-* Profile Image Upload
-* CRUD Operations
-
----
+* Create, update, and delete employees
+* User account creation during employee onboarding
+* Profile image uploads
+* Reporting manager assignment
+* Access role assignment and filtering
+* Validation for username, email, and phone number uniqueness
 
 ### 📋 Task Management
 
-* Create Tasks
-* Assign Tasks to Employees
-* Status Tracking
-* Priority Levels
-* File Attachments
-* Deadlines
-* Rich Text Descriptions
+* Create, update, and delete tasks
+* Assign tasks to representatives
+* Priority and status tracking
+* Deadlines and file attachments
+* CKEditor-rich task descriptions
+* Manager-scoped task assignment rules
 
----
+### 📊 Dashboard and Profile
 
-### 📊 Dashboard
+* Role-aware dashboard counts
+* Recent task summaries
+* Representative company listing
+* Personal profile page for logged-in users
 
-* Total Companies
-* Total Employees
-* Total Tasks
-* Recent Tasks
-* Personalized Employee Dashboard
+### 🔔 Workflow Automation
 
----
+* Welcome emails for newly created employees
+* Task assignment notifications
+* Task reassignment notifications
+* Company assignment notifications
+* Company reassignment notifications
+* Password reset via Django Authentication
+* AJAX endpoints for dynamic dropdowns and validation
 
-### ⚠️ Error Handling
+# 📧 Email Notifications
 
-* Custom 403 Page
-* Custom 404 Page
-* Form Validation
-* Permission Protection
+The system automatically sends email notifications for important workflow events:
+
+* Welcome email when a new employee account is created
+* Task assignment notifications
+* Task reassignment notifications
+* Company assignment notifications
+* Company reassignment notifications
+* Password reset emails (Django Authentication)
 
 ---
 
 # 📈 Project Statistics
 
-| Metric           | Value        |
-| ---------------- | ------------ |
-| Models           | 3            |
-| CRUD Modules     | 3            |
-| User Roles       | 3            |
-| Database         | PostgreSQL   |
-| Authentication   | Django Auth  |
-| Rich Text Editor | CKEditor     |
-| Deployment       | Render       |
-| Version Control  | Git + GitHub |
+| Metric | Value |
+| ------ | ----- |
+| Core Models | 6 |
+| Main Modules | Company, Employee, Task, Access Control |
+| User Roles | Admin, Manager, Representative |
+| Database | PostgreSQL |
+| Authentication | Django Auth |
+| Rich Text Editor | CKEditor |
+| Media Storage | Cloudinary |
+| Deployment | Render |
+| Version Control | Git + GitHub |
 
 ---
 
@@ -163,8 +164,10 @@ Gunicorn
    ▼
 Django Application
    │
-   ▼
-Django ORM
+   ├── Django ORM
+   ├── CKEditor
+   ├── SMTP Email
+   └── Cloudinary Media Storage
    │
    ▼
 PostgreSQL Database
@@ -177,33 +180,36 @@ PostgreSQL Database
 ```text
 Admin
    │
-   ├── Creates Companies
-   │
-   ├── Creates Employees
-   │
-   └── Assigns Tasks
+   ├── Creates access roles and permissions
+   ├── Creates companies
+   ├── Creates employees
+   └── Assigns tasks
             │
             ▼
-        Employee
+Manager
+   │
+   ├── Manages assigned companies
+   ├── Manages representatives
+   └── Assigns tasks to team members
             │
             ▼
-     Updates Task Status
+Representative
+   │
+   └── Views assigned companies and tasks
 ```
 
 ---
 
-# 🗄 Database Design
+# 🗄 Data Model
 
 ```text
-Company
-   │
-   │ 1:N
-   ▼
-Employee
-   │
-   │ 1:N
-   ▼
-Task
+Role ──< RolePermission >── Permission
+  │
+  ▼
+Employee ──< Company
+  │            │
+  │            └──< Task
+  └── Reporting Manager (self reference)
 ```
 
 ---
@@ -214,25 +220,17 @@ Task
 
 ![Dashboard](assets/dashboard.png)
 
----
-
 ## Companies Module
 
 ![Companies](assets/company.png)
-
----
 
 ## Employees Module
 
 ![Employees](assets/employee.png)
 
----
-
 ## Tasks Module
 
 ![Tasks](assets/task.png)
-
----
 
 ## CKEditor Integration
 
@@ -244,8 +242,8 @@ Task
 
 ## Backend
 
-* Python 3
-* Django 6
+* Python 3.13
+* Django 6.0.5
 
 ## Database
 
@@ -255,17 +253,25 @@ Task
 
 * HTML5
 * CSS3
-* Bootstrap 5
+* Bootstrap 5.3
+* JavaScript (AJAX)
 * Django Templates
 
 ## Packages
 
 * django-ckeditor
-* psycopg2-binary
+* django-cloudinary-storage
+* cloudinary
 * Pillow
-* WhiteNoise
+* psycopg2-binary
 * python-dotenv
+* WhiteNoise
 * Gunicorn
+
+## Integrations
+
+* SMTP email notifications
+* Cloudinary media storage
 
 ## Deployment
 
@@ -283,9 +289,12 @@ crm_project/
 ├── crm/
 │   ├── migrations/
 │   ├── templates/
+│   │   ├── emails/
+│   │   └── ...
 │   ├── templatetags/
 │   ├── forms.py
 │   ├── models.py
+│   ├── utils.py
 │   ├── views.py
 │   └── urls.py
 │
@@ -294,8 +303,9 @@ crm_project/
 │   ├── urls.py
 │   └── wsgi.py
 │
+├── assets/
 ├── media/
-├── staticfiles/
+├── static/
 ├── requirements.txt
 ├── Procfile
 ├── manage.py
@@ -339,7 +349,6 @@ Create a `.env` file:
 
 ```env
 SECRET_KEY=your_secret_key
-
 DEBUG=True
 
 DB_NAME=crm_db
@@ -347,6 +356,13 @@ DB_USER=postgres
 DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
+
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_app_password
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ## Apply Migrations
@@ -377,6 +393,7 @@ The application is deployed using:
 * PostgreSQL Database
 * WhiteNoise Static Files
 * Gunicorn WSGI Server
+* Cloudinary Media Storage
 * GitHub Auto Deploy
 
 ### CI/CD Flow
@@ -437,14 +454,14 @@ Production Website
 
 # 🚀 Future Enhancements
 
-* Cloudinary Integration
-* REST API using DRF
-* Email Notifications
-* Activity Logs
+* REST API using Django REST Framework
+* Activity Logs / Audit Trail
 * Docker Support
 * AWS Deployment
 * Analytics Dashboard
-* Team Collaboration Features
+* In-app Notification Center
+* Real-time Notifications (WebSockets)
+* Two-Factor Authentication
 
 ---
 
@@ -452,14 +469,19 @@ Production Website
 
 This project helped me gain hands-on experience with:
 
-* Django Authentication
-* Role-Based Authorization
-* PostgreSQL Integration
+* Django Authentication & Authorization
+* Role-Based Access Control (RBAC)
+* PostgreSQL Database Design
 * CKEditor Integration
+* Cloudinary Media Storage
+* AJAX-based Dynamic Forms
+* Email Notifications using SMTP
+* CSV Import & Export
 * CRUD Operations
 * File Upload Handling
-* Production Deployment
-* GitHub Workflow
+* Django Template Tags
+* Production Deployment on Render
+* Git & GitHub Workflow
 * Environment Variables
 * CI/CD Concepts
 
@@ -469,7 +491,7 @@ This project helped me gain hands-on experience with:
 
 **Shaurya Vrat Shukla**
 
-Python Developer | Django Developer | AI/ML Enthusiast
+Backend Developer | Django Developer | Python Enthusiast
 
 GitHub: https://github.com/Shaurya-thinker
 
