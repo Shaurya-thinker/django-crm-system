@@ -121,7 +121,7 @@ The project demonstrates real-world Django concepts including:
 * Password reset via Django Authentication
 * AJAX endpoints for dynamic dropdowns and validation
 
-# 📧 Email Notifications
+### 📧 Email Notifications
 
 The system automatically sends email notifications for important workflow events:
 
